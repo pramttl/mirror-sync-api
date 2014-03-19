@@ -1,8 +1,9 @@
-from flask import Flask
+from flask import Flask, jsonify
 app = Flask(__name__)
 
+import simplejson as json
 import ConfigParser
-cp = ConfigParser.ConfigParser()
+
 
 class DummyGlobalSectionHead(object):
     '''
@@ -33,6 +34,7 @@ def sections_as_dict(cp):
     return d
 
 
+cp = ConfigParser.ConfigParser()
 cp.readfp(DummyGlobalSectionHead(open('rsyncd-osl.conf')))
 
 # Get all the sections in the rsyncd config file.
@@ -45,9 +47,15 @@ modules = sections.keys()
 # global_items = cp.items('global')
 
 
-@app.route("/")
-def hello():
-    return "Hello World!"
+@app.route('/json/sections', methods=['GET'])
+def json_sections():
+    '''
+    Returns the sections of a rsyncd configuration file as a json response
+    '''
+    json_response = jsonify(sections)
+    return json_response
+
 
 if __name__ == "__main__":
+    app.debug = True
     app.run()
