@@ -9,8 +9,15 @@ config = {'apscheduler.jobstores.file.class': 'apscheduler.jobstores.shelve_stor
 
 sched = Scheduler(config)
 
-def sync_project_from_upstream():
-    print "Syncing from upstream!"
+
+def sync_project_from_upstream(project_name, host, source, dest, interval,
+                               rsync_password, start_date):
+    # Todo
+    '''
+    args = ["rsync", "-avz", "--include='*/'", source, dest]
+    subprocess.call(args)
+    '''
+    print "Syncing of " + project_name + " has been scheduled!"
 
 
 @app.route('/addproject/', methods=['POST',])
@@ -24,17 +31,26 @@ def add_project():
     '''
     project_name = request.args["name"]
     host = request.args["host"]
-    source_path = request.args["source_path"]
+    source = request.args["source"]
+    dest = request.args["dest"]
     interval_unit = request.args["interval_unit"]
     interval = int(request.args["interval"])
     start_date = request.args["start_date"]
+    rsync_password = ""
 
     interval_kwargs = {'start_date': start_date, interval_unit: 2}
 
-    sched.add_interval_job(sync_project_from_upstream, **interval_kwargs)
+    job_function = lambda: sync_project_from_upstream(project_name,
+                                                      host,
+                                                      source_path,
+                                                      interval,
+                                                      start_date)
+
+    sched.add_interval_job(job_function, **interval_kwargs)
     sched.start()
 
     return jsonify({"success": True})
+
 
 if __name__ == "__main__":
     app.debug = True
