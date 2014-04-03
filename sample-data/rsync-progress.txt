@@ -1,0 +1,209 @@
+ubuntu@ip-10-253-18-247:~/temp/syncedup$ rsync -rv --progress . ubuntu@10.252.164.249::documents/
+Password: 
+sending incremental file list
+dummy_hello
+          20 100%    0.00kB/s    0:00:00 (xfer#1, to-check=100/102)
+testfile1
+           0 100%    0.00kB/s    0:00:00 (xfer#2, to-check=99/102)
+testfile10
+           0 100%    0.00kB/s    0:00:00 (xfer#3, to-check=98/102)
+testfile100
+           0 100%    0.00kB/s    0:00:00 (xfer#4, to-check=97/102)
+testfile11
+           0 100%    0.00kB/s    0:00:00 (xfer#5, to-check=96/102)
+testfile12
+           0 100%    0.00kB/s    0:00:00 (xfer#6, to-check=95/102)
+testfile13
+           0 100%    0.00kB/s    0:00:00 (xfer#7, to-check=94/102)
+testfile14
+           0 100%    0.00kB/s    0:00:00 (xfer#8, to-check=93/102)
+testfile15
+           0 100%    0.00kB/s    0:00:00 (xfer#9, to-check=92/102)
+testfile16
+           0 100%    0.00kB/s    0:00:00 (xfer#10, to-check=91/102)
+testfile17
+           0 100%    0.00kB/s    0:00:00 (xfer#11, to-check=90/102)
+testfile18
+           0 100%    0.00kB/s    0:00:00 (xfer#12, to-check=89/102)
+testfile19
+           0 100%    0.00kB/s    0:00:00 (xfer#13, to-check=88/102)
+testfile2
+           0 100%    0.00kB/s    0:00:00 (xfer#14, to-check=87/102)
+testfile20
+           0 100%    0.00kB/s    0:00:00 (xfer#15, to-check=86/102)
+testfile21
+           0 100%    0.00kB/s    0:00:00 (xfer#16, to-check=85/102)
+testfile22
+           0 100%    0.00kB/s    0:00:00 (xfer#17, to-check=84/102)
+testfile23
+           0 100%    0.00kB/s    0:00:00 (xfer#18, to-check=83/102)
+testfile24
+           0 100%    0.00kB/s    0:00:00 (xfer#19, to-check=82/102)
+testfile25
+           0 100%    0.00kB/s    0:00:00 (xfer#20, to-check=81/102)
+testfile26
+           0 100%    0.00kB/s    0:00:00 (xfer#21, to-check=80/102)
+testfile27
+           0 100%    0.00kB/s    0:00:00 (xfer#22, to-check=79/102)
+testfile28
+           0 100%    0.00kB/s    0:00:00 (xfer#23, to-check=78/102)
+testfile29
+           0 100%    0.00kB/s    0:00:00 (xfer#24, to-check=77/102)
+testfile3
+           0 100%    0.00kB/s    0:00:00 (xfer#25, to-check=76/102)
+testfile30
+           0 100%    0.00kB/s    0:00:00 (xfer#26, to-check=75/102)
+testfile31
+           0 100%    0.00kB/s    0:00:00 (xfer#27, to-check=74/102)
+testfile32
+           0 100%    0.00kB/s    0:00:00 (xfer#28, to-check=73/102)
+testfile33
+           0 100%    0.00kB/s    0:00:00 (xfer#29, to-check=72/102)
+testfile34
+           0 100%    0.00kB/s    0:00:00 (xfer#30, to-check=71/102)
+testfile35
+           0 100%    0.00kB/s    0:00:00 (xfer#31, to-check=70/102)
+testfile36
+           0 100%    0.00kB/s    0:00:00 (xfer#32, to-check=69/102)
+testfile37
+           0 100%    0.00kB/s    0:00:00 (xfer#33, to-check=68/102)
+testfile38
+           0 100%    0.00kB/s    0:00:00 (xfer#34, to-check=67/102)
+testfile39
+           0 100%    0.00kB/s    0:00:00 (xfer#35, to-check=66/102)
+testfile4
+           0 100%    0.00kB/s    0:00:00 (xfer#36, to-check=65/102)
+testfile40
+           0 100%    0.00kB/s    0:00:00 (xfer#37, to-check=64/102)
+testfile41
+           0 100%    0.00kB/s    0:00:00 (xfer#38, to-check=63/102)
+testfile42
+           0 100%    0.00kB/s    0:00:00 (xfer#39, to-check=62/102)
+testfile43
+           0 100%    0.00kB/s    0:00:00 (xfer#40, to-check=61/102)
+testfile44
+           0 100%    0.00kB/s    0:00:00 (xfer#41, to-check=60/102)
+testfile45
+           0 100%    0.00kB/s    0:00:00 (xfer#42, to-check=59/102)
+testfile46
+           0 100%    0.00kB/s    0:00:00 (xfer#43, to-check=58/102)
+testfile47
+           0 100%    0.00kB/s    0:00:00 (xfer#44, to-check=57/102)
+testfile48
+           0 100%    0.00kB/s    0:00:00 (xfer#45, to-check=56/102)
+testfile49
+           0 100%    0.00kB/s    0:00:00 (xfer#46, to-check=55/102)
+testfile5
+           0 100%    0.00kB/s    0:00:00 (xfer#47, to-check=54/102)
+testfile50
+           0 100%    0.00kB/s    0:00:00 (xfer#48, to-check=53/102)
+testfile51
+           0 100%    0.00kB/s    0:00:00 (xfer#49, to-check=52/102)
+testfile52
+           0 100%    0.00kB/s    0:00:00 (xfer#50, to-check=51/102)
+testfile53
+           0 100%    0.00kB/s    0:00:00 (xfer#51, to-check=50/102)
+testfile54
+           0 100%    0.00kB/s    0:00:00 (xfer#52, to-check=49/102)
+testfile55
+           0 100%    0.00kB/s    0:00:00 (xfer#53, to-check=48/102)
+testfile56
+           0 100%    0.00kB/s    0:00:00 (xfer#54, to-check=47/102)
+testfile57
+           0 100%    0.00kB/s    0:00:00 (xfer#55, to-check=46/102)
+testfile58
+           0 100%    0.00kB/s    0:00:00 (xfer#56, to-check=45/102)
+testfile59
+           0 100%    0.00kB/s    0:00:00 (xfer#57, to-check=44/102)
+testfile6
+           0 100%    0.00kB/s    0:00:00 (xfer#58, to-check=43/102)
+testfile60
+           0 100%    0.00kB/s    0:00:00 (xfer#59, to-check=42/102)
+testfile61
+           0 100%    0.00kB/s    0:00:00 (xfer#60, to-check=41/102)
+testfile62
+           0 100%    0.00kB/s    0:00:00 (xfer#61, to-check=40/102)
+testfile63
+           0 100%    0.00kB/s    0:00:00 (xfer#62, to-check=39/102)
+testfile64
+           0 100%    0.00kB/s    0:00:00 (xfer#63, to-check=38/102)
+testfile65
+           0 100%    0.00kB/s    0:00:00 (xfer#64, to-check=37/102)
+testfile66
+           0 100%    0.00kB/s    0:00:00 (xfer#65, to-check=36/102)
+testfile67
+           0 100%    0.00kB/s    0:00:00 (xfer#66, to-check=35/102)
+testfile68
+           0 100%    0.00kB/s    0:00:00 (xfer#67, to-check=34/102)
+testfile69
+           0 100%    0.00kB/s    0:00:00 (xfer#68, to-check=33/102)
+testfile7
+           0 100%    0.00kB/s    0:00:00 (xfer#69, to-check=32/102)
+testfile70
+           0 100%    0.00kB/s    0:00:00 (xfer#70, to-check=31/102)
+testfile71
+           0 100%    0.00kB/s    0:00:00 (xfer#71, to-check=30/102)
+testfile72
+           0 100%    0.00kB/s    0:00:00 (xfer#72, to-check=29/102)
+testfile73
+           0 100%    0.00kB/s    0:00:00 (xfer#73, to-check=28/102)
+testfile74
+           0 100%    0.00kB/s    0:00:00 (xfer#74, to-check=27/102)
+testfile75
+           0 100%    0.00kB/s    0:00:00 (xfer#75, to-check=26/102)
+testfile76
+           0 100%    0.00kB/s    0:00:00 (xfer#76, to-check=25/102)
+testfile77
+           0 100%    0.00kB/s    0:00:00 (xfer#77, to-check=24/102)
+testfile78
+           0 100%    0.00kB/s    0:00:00 (xfer#78, to-check=23/102)
+testfile79
+           0 100%    0.00kB/s    0:00:00 (xfer#79, to-check=22/102)
+testfile8
+           0 100%    0.00kB/s    0:00:00 (xfer#80, to-check=21/102)
+testfile80
+           0 100%    0.00kB/s    0:00:00 (xfer#81, to-check=20/102)
+testfile81
+           0 100%    0.00kB/s    0:00:00 (xfer#82, to-check=19/102)
+testfile82
+           0 100%    0.00kB/s    0:00:00 (xfer#83, to-check=18/102)
+testfile83
+           0 100%    0.00kB/s    0:00:00 (xfer#84, to-check=17/102)
+testfile84
+           0 100%    0.00kB/s    0:00:00 (xfer#85, to-check=16/102)
+testfile85
+           0 100%    0.00kB/s    0:00:00 (xfer#86, to-check=15/102)
+testfile86
+           0 100%    0.00kB/s    0:00:00 (xfer#87, to-check=14/102)
+testfile87
+           0 100%    0.00kB/s    0:00:00 (xfer#88, to-check=13/102)
+testfile88
+           0 100%    0.00kB/s    0:00:00 (xfer#89, to-check=12/102)
+testfile89
+           0 100%    0.00kB/s    0:00:00 (xfer#90, to-check=11/102)
+testfile9
+           0 100%    0.00kB/s    0:00:00 (xfer#91, to-check=10/102)
+testfile90
+           0 100%    0.00kB/s    0:00:00 (xfer#92, to-check=9/102)
+testfile91
+           0 100%    0.00kB/s    0:00:00 (xfer#93, to-check=8/102)
+testfile92
+           0 100%    0.00kB/s    0:00:00 (xfer#94, to-check=7/102)
+testfile93
+           0 100%    0.00kB/s    0:00:00 (xfer#95, to-check=6/102)
+testfile94
+           0 100%    0.00kB/s    0:00:00 (xfer#96, to-check=5/102)
+testfile95
+           0 100%    0.00kB/s    0:00:00 (xfer#97, to-check=4/102)
+testfile96
+           0 100%    0.00kB/s    0:00:00 (xfer#98, to-check=3/102)
+testfile97
+           0 100%    0.00kB/s    0:00:00 (xfer#99, to-check=2/102)
+testfile98
+           0 100%    0.00kB/s    0:00:00 (xfer#100, to-check=1/102)
+testfile99
+           0 100%    0.00kB/s    0:00:00 (xfer#101, to-check=0/102)
+
+sent 4952 bytes  received 1933 bytes  1251.82 bytes/sec
+total size is 20  speedup is 0.00
+
