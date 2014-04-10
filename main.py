@@ -20,9 +20,9 @@ import logging
 
 
 def sync_project_from_upstream(project, host, source, dest, password):
-    final_dest = project + '@' + host + '::' + dest
+    full_source = project + '@' + host + '::' + source
 
-    # rsync_call(source=".", full_dest, password=rsync_password)
+    # rsync_call(full_source, dest, password)
 
     print "Syncing of " + project + " has been scheduled!"
 
