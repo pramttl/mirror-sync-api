@@ -17,7 +17,7 @@ def rsync_call(
 
     # A dry run call helps determine the total number of files used for tracking
     # percentage of sync during the real call.
-    cmd = 'rsync -az --stats --dry-run ' + source + ' ' + full_dest 
+    cmd = 'rsync -avH --delete --stats --dry-run ' + source + ' ' + full_dest 
     proc = subprocess.Popen(cmd,
       shell=True,
       stdin=subprocess.PIPE,
@@ -28,7 +28,7 @@ def rsync_call(
     mn = re.findall(r'Number of files: (\d+)', nfiles_str)
     total_files = int(mn[0])
      
-    cmd = 'rsync -avz  --progress ' + source + ' ' + full_dest 
+    cmd = 'rsync -avH --delete --progress ' + source + ' ' + full_dest 
     rsync_process = subprocess.Popen(cmd,
                                      shell=True,
                                      stdin=subprocess.PIPE,
