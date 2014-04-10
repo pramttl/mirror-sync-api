@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 import simplejson as json
+from sync_utilities import rsync_call
 
 from apscheduler.scheduler import Scheduler
 LOG_FILE = "logfile.txt"
@@ -18,16 +19,15 @@ sched.start()
 import logging
 
 
-def sync_project_from_upstream(project, host, source, dest, rsync_password):
-    # Todo
-    '''
-    args = ["rsync", "-avz", "--include='*/'", source, dest]
-    subprocess.call(args)
-    '''
+def sync_project_from_upstream(project, host, source, dest, password):
+    final_dest = project + '@' + host + '::' + dest
+
+    # rsync_call(source=".", full_dest, password=rsync_password)
+
     print "Syncing of " + project + " has been scheduled!"
 
 
-@app.route('/addproject/', methods=['POST',])
+@app.route('/addproject/', methods=['POST', ])
 def add_project():
     '''
     Schedules an upstream project for syncing (periodic)
@@ -67,4 +67,3 @@ def add_project():
 if __name__ == "__main__":
     app.debug = True
     app.run()
-
