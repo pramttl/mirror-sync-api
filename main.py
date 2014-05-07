@@ -22,9 +22,10 @@ import logging
 def sync_project_from_upstream(project, host, source, dest, password):
     full_source = project + '@' + host + '::' + source
 
-    # rsync_call(full_source, dest, password)
+    print "password: ", password
+    print "Running scheduled sync of " + project
 
-    print "Syncing of " + project + " has been scheduled!"
+    rsync_call(full_source, dest, password)
 
 
 @app.route('/addproject/', methods=['POST', ])
@@ -32,9 +33,9 @@ def add_project():
     '''
     Schedules an upstream project for syncing (periodic)
 
-    @project: Name of the project
-    @host: IP or hostname of the upstream rsync provider.
-    @source: Complete path on the source that tells the rsync path.
+    @project: Name of the unix user of the upstream project server
+    @host: IP or hostname of the upstream rsync provider
+    @source: Complete path on the source that tells the rsync path
     '''
     project_obj = request.json
     project = project_obj["project"]

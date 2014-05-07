@@ -12,7 +12,9 @@ def rsync_call(
     Function responsible for calling rsync as a subprocess with the appropriate
     parameters.
 
-    @source: The directory to sync. For current directory
+    @source: The directory to sync.
+    @dest: The location of the array where data is synced to. Eg. /data/ftp/.1
+    @password: The rsync password defined by the upstream source.
     '''
     os.environ['RSYNC_PASSWORD'] = password
 
