@@ -22,7 +22,6 @@ import logging
 def sync_project_from_upstream(project, host, source, dest, password):
     full_source = project + '@' + host + '::' + source
 
-    print "password: ", password
     print "Running scheduled sync of " + project
 
     rsync_call(full_source, dest, password)
@@ -55,7 +54,7 @@ def add_project():
     if start_date:
         interval_kwargs = {"start_date": start_date, interval_unit: interval}
     else:
-        interval_kwargs = {"start_date": start_date, interval_unit: interval}
+        interval_kwargs = {interval_unit: interval}
 
     logging.basicConfig()
 
