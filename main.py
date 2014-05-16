@@ -42,28 +42,41 @@ def add_project():
     print project_obj
 
     job_function = lambda: sync_project_from_upstream(project,
-                                                      project_obj["host"],
-                                                      project_obj["source"],
-                                                      project_obj["dest"],
-                                                      project_obj["rsync_password"])
+                                                      project_obj['host'],
+                                                      project_obj['source'],
+                                                      project_obj['dest'],
+                                                      project_obj['rsync_password'])
 
-    start_date = project_obj.get("start_date")
-    interval = int(project_obj.get("interval")) or 1
-    interval_unit = project_obj.get("interval_unit", "minutes")
+    # Reading the schedule parameters into a separate dictionary
+    schedule_kwargs = {}
 
-    if start_date:
-        interval_kwargs = {"start_date": start_date, interval_unit: interval}
-    else:
-        interval_kwargs = {interval_unit: interval}
+    # This is to make sure that default APScheduler values are not overwritten by None
+    if project_obj.get('start_date'):
+        schedule_kwargs['start_date'] = project_obj.get('start_date')
+
+    if project_obj.get('month'):
+        schedule_kwargs['month'] = project_obj.get('month')
+
+    if project_obj.get('day'):
+        schedule_kwargs['day'] = project_obj.get('day')
+
+    if project_obj.get('hour'):
+        schedule_kwargs['hour'] = project_obj.get('hour')
+
+    if project_obj.get('minute'):
+        schedule_kwargs['minute'] = project_obj.get('minute')
+
+    if project_obj.get('day_of_week'):
+        schedule_kwargs['day_of_week'] = project_obj.get('day_of_week')
 
     logging.basicConfig()
 
-    # Add the job to the already running scheduler.
-    sched.add_interval_job(job_function, **interval_kwargs)
+    # Add the job to the already running scheduler
+    sched.add_cron_job(job_function, **schedule_kwargs)
 
     return jsonify({'method': 'add_project', 'success': True, "project": project})
 
 
 if __name__ == "__main__":
     app.debug = True
-    app.run()
+    app.run(use_reloader=False)
