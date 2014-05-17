@@ -58,11 +58,11 @@ The following response is returned if adding project is successful:
 
 ##### Scheduling parameters
 
-The API uses a cron like scheduling as defined in [APScheduler documentation](http://pythonhosted.org/APScheduler/cronschedule.html)
+The API uses a cron like scheduling as defined in [APScheduler documentation](http://pythonhosted.org/APScheduler/cronschedule.html).
 Fields greater than the least significant explicitly defined field default to * 
 while lesser fields default to their minimum values except for `week` and `day_of_week` which default to *.
 A `start_date` can also be specified if required. You can obtain a valid start
-date by entering the following at bash promot.
+date by entering the following at bash prompt.
 
     date "+%Y-%m-%d %H:%M"
 

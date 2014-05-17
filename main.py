@@ -23,7 +23,6 @@ def sync_project_from_upstream(project, host, source, dest, password):
     full_source = project + '@' + host + '::' + source
 
     print "Running scheduled sync of " + project
-
     rsync_call(full_source, dest, password)
 
 
