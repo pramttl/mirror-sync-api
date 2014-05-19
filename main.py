@@ -80,7 +80,8 @@ def list_projects():
     projects = []
     for job in jobs:
         projects.append(job.kwargs)
-    return jsonify(projects)
+    print projects
+    return json.dumps(projects)
 
 
 if __name__ == "__main__":
