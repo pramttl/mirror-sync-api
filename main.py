@@ -38,13 +38,11 @@ def add_project():
     project_obj = request.json
     project = project_obj["project"]
 
-    print project_obj
-
-    job_function = lambda: sync_project_from_upstream(project,
-                                                      project_obj['host'],
-                                                      project_obj['source'],
-                                                      project_obj['dest'],
-                                                      project_obj['rsync_password'])
+    job_kwargs = {'project': project,
+                  'host': project_obj['host'],
+                  'source': project_obj['source'],
+                  'dest': project_obj['dest'],
+                  'password': project_obj['rsync_password'],}
 
     # Reading the schedule parameters into a separate dictionary
     schedule_kwargs = {}
@@ -71,11 +69,21 @@ def add_project():
     logging.basicConfig()
 
     # Add the job to the already running scheduler
-    sched.add_cron_job(job_function, **schedule_kwargs)
+    sched.add_cron_job(sync_project_from_upstream, kwargs=job_kwargs, **schedule_kwargs)
 
-    return jsonify({'method': 'add_project', 'success': True, "project": project})
+    return jsonify({'method': 'add_project', 'success': True, 'project': project })
+
+
+@app.route('/list_projects/', methods=['GET', ])
+def list_projects():
+    jobs = sched.get_jobs()
+    projects = []
+    for job in jobs:
+        projects.append(job.kwargs)
+    return jsonify(projects)
 
 
 if __name__ == "__main__":
     app.debug = True
     app.run(use_reloader=False)
+
