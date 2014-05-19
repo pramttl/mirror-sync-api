@@ -18,11 +18,11 @@ Projects are added via the api. The following parameters are specified:
 * start_date in posix format Eg: "2014-03-10 09:30"
 
 
-### Geting up and running
+### Running the master node REST API
 
     virtualenv venv
     pip install -r requirements.txt
-    python main.py
+    python master.py
 
     # This starts the local api server (in development mode)
 
@@ -33,7 +33,7 @@ Projects are added via the api. The following parameters are specified:
 
 Send a `POST` request to of content-type `application/json` type to:
 
-    http://127.0.0.1:5000/addproject/
+    http://127.0.0.1:5000/add_project/
 
 Example of a JSON request for adding a project:
 
@@ -55,6 +55,12 @@ The following response is returned if adding project is successful:
          success: true
         }
 
+
+#### Listing upstream projects:
+
+Just send a GET request to the follo. to list all available projects.
+
+    http://127.0.0.1:5000/list_projects/
 
 ##### Scheduling parameters
 

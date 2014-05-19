@@ -26,7 +26,7 @@ def sync_project_from_upstream(project, host, source, dest, password):
     rsync_call(full_source, dest, password)
 
 
-@app.route('/addproject/', methods=['POST', ])
+@app.route('/add_project/', methods=['POST', ])
 def add_project():
     '''
     Schedules an upstream project for syncing (periodic)
@@ -76,12 +76,32 @@ def add_project():
 
 @app.route('/list_projects/', methods=['GET', ])
 def list_projects():
+    '''
+    List all the upstream projects scheduled for syncing.
+    '''
     jobs = sched.get_jobs()
     projects = []
     for job in jobs:
         projects.append(job.kwargs)
     print projects
     return json.dumps(projects)
+
+
+@app.route('/remove_project/', methods=['POST', ])
+def remove_project():
+    '''
+    Remove an upstream project from the master node.
+    '''
+    project_obj = request.json
+    project = project_obj['project']
+
+    jobs = sched.get_jobs()
+    for job in jobs:
+        if job.kwargs['project'] == project:
+            print "Job found"
+            sched.unschedule_job(job)
+
+    return jsonify({'method': 'remove_project', 'success': True, 'project': project })
 
 
 if __name__ == "__main__":

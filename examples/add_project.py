@@ -1,7 +1,7 @@
 import requests
 import simplejson as json
 
-url = "http://localhost:5000/addproject/"
+url = "http://localhost:5000/add_project/"
 headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
 data = {
