@@ -1,9 +1,13 @@
 Open Source Lab: Simple Mirror Syncing API
 ------------------------------------------
 
-The following functionality is being built at the moment:
+The following functionality is available at the moment
 
-* Adding projects
+* Adding an upstream project
+* Removing a project
+* Updating a project
+
+(Only master node API is available at the moment)
 
 ### Adding an upstream project
 
@@ -27,9 +31,7 @@ Projects are added via the api. The following parameters are specified:
     # This starts the local api server (in development mode)
 
 
-### Examples:
-
-#### Adding a project:
+### Adding a project:
 
 Send a `POST` request to of content-type `application/json` type to:
 
@@ -66,14 +68,14 @@ date by entering the following at bash prompt.
     date "+%Y-%m-%d %H:%M"
 
 
-#### Listing upstream projects:
+### Listing projects:
 
 Just send a GET request to the follo. to list all available projects.
 
     http://127.0.0.1:5000/list_projects/
 
 
-#### Removing a project:
+### Removing a project:
 
 Projects can be removed from the API records, based on their name. To remove a
  project send a `POST` request to of content-type `application/json` type to:
@@ -91,7 +93,7 @@ If the project was present and successfully removed, 'success' parameter in the 
 otherwise it will be false.
 
 
-#### Updating a project:
+### Updating a project:
 
 ##### 1. Updating Basic Settings
 
@@ -119,7 +121,7 @@ Example json payload:
          "start_date": "2014-05-7 18:00",                    # $ date "+%Y-%m-%d %H:%M"
         }
 
-* Rule:  The previous schedule parameters will be overwritten by the current schedule parameters.
+  [Rule]: The previous schedule parameters will be overwritten by the current schedule parameters.
   You just have to assume that the previous project was not scheduled and apply the correct schedule
   settings while updating.The basic project parameters are not altered.
 
