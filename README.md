@@ -31,7 +31,7 @@ Projects are added via the api. The following parameters are specified:
     # This starts the local api server (in development mode)
 
 
-### Adding a projects
+### Adding a project
 
 Send a `POST` request to of content-type `application/json` type to:
 
@@ -83,7 +83,7 @@ Example:
         source: "documents",
         host: "ftp.osuosl.org",
         password: "password",
-        cron_params: {
+        cron: {
           week: "*",
           hour: "*",
           day_of_week: "*",
@@ -150,3 +150,12 @@ Example json payload:
   You just have to assume that the previous project was not scheduled and apply the correct schedule
   settings while updating.The basic project parameters are not altered.
 
+
+### Explicitly initiating a sync
+
+You can even request syncing up of a particular project apart from the scheduled syncing
+by providing the name of a project. The API endpoint for this is:
+
+    /syncup/?project=<your_project_name>
+
+Note: For explicit syncing the project must already be added via the API previously.

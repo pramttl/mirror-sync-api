@@ -11,7 +11,8 @@ def rsync_call(
     ):
     '''
     Function responsible for calling rsync as a subprocess with the appropriate
-    parameters.
+    parameters. This function is blocking by default and only returns after
+    rsync is complete.
 
     @source: The directory to sync.
     @dest: The location of the array where data is synced to. Eg. /data/ftp/.1
@@ -27,6 +28,27 @@ def rsync_call(
     # Wait for the sync to complete before returning.
     rsync_child_process.wait()
     print "Rsync complete"
+
+
+def rsync_call_nonblocking(
+    full_source="54.245.124.177::documents/",
+    dest=".",
+    password="rsyncpassword",
+    ):
+    '''
+    Function responsible for calling rsync as a subprocess with the appropriate
+    parameters.
+
+    @source: The directory to sync.
+    @dest: The location of the array where data is synced to. Eg. /data/ftp/.1
+    @password: The rsync password defined by the upstream source.
+    '''
+    os.environ['RSYNC_PASSWORD'] = password
+    cmd = 'rsync -avH --delete --progress ' + full_source + ' ' + dest
+    rsync_child_process = subprocess.Popen(cmd,
+                                           shell=True,
+                                           stdin=subprocess.PIPE,
+                                           stdout=subprocess.PIPE,)
 
 
 # Todo: The process is not exiting properly. Check!

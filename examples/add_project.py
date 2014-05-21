@@ -10,7 +10,7 @@ data = {
  "host": "xlstosql.brightants.com",
  "dest": "/home/pranjal/projects/osl/syncedup_temp/", # "/data/ftp/.1/",
  "rsync_password": "iitbhu123",
- "minute": "*",
+ "minute": "*/3",
  "start_date": "2014-05-7 18:00",                    # $ date "+%Y-%m-%d %H:%M"
 }
 

@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 import simplejson as json
-from sync_utilities import rsync_call
+from sync_utilities import rsync_call, rsync_call_nonblocking
 
 from apscheduler.scheduler import Scheduler
 from apscheduler.triggers import CronTrigger
@@ -10,8 +10,10 @@ from apscheduler.triggers import CronTrigger
 LOG_FILE = "logfile.txt"
 
 # Configuring a persistent job store and instantiating scheduler
-config = {'apscheduler.jobstores.file.class': 'apscheduler.jobstores.shelve_store:ShelveJobStore',
-          'apscheduler.jobstores.file.path': 'scheduledjobs.db'}
+config = {
+    'apscheduler.jobstores.file.class': 'apscheduler.jobstores.shelve_store:ShelveJobStore',
+    'apscheduler.jobstores.file.path': 'scheduledjobs.db'
+}
 
 sched = Scheduler(config)
 
@@ -24,7 +26,7 @@ import logging
 def sync_project_from_upstream(project, host, source, dest, password):
     full_source = project + '@' + host + '::' + source
 
-    print "Running scheduled sync of " + project
+    print "Syncing up " + project
     rsync_call(full_source, dest, password)
 
 
@@ -71,7 +73,8 @@ def add_project():
     logging.basicConfig()
 
     # Add the job to the already running scheduler
-    sched.add_cron_job(sync_project_from_upstream, kwargs=job_kwargs, **schedule_kwargs)
+    sched.add_cron_job(sync_project_from_upstream, kwargs=job_kwargs,
+                       **schedule_kwargs)
 
     return jsonify({'method': 'add_project', 'success': True, 'project': project })
 
@@ -114,7 +117,38 @@ def remove_project():
             sched.unschedule_job(job)
             break
 
-    return jsonify({'method': 'remove_project', 'success': action_status, 'project': project })
+    return jsonify({'method': 'remove_project', 'success': action_status,
+                    'project': project })
+
+
+@app.route('/syncup/', methods=['GET', ])
+def syncup_project():
+    '''
+    Allows to explicitly initiate syncing for a project.
+    '''
+    project = request.args.get('project')
+
+    if project:
+        jobs = sched.get_jobs()
+        action_status = False
+        for job in jobs:
+            if job.kwargs['project'] == project:
+                break
+
+        host = job.kwargs['host']
+        source = job.kwargs['source']
+        project = job.kwargs['project']
+        dest = job.kwargs['dest']
+        password = job.kwargs['password']
+
+        full_source = project + '@' + host + '::' + source
+        rsync_call_nonblocking(full_source, dest, password)
+
+        return jsonify({'method': 'syncup_project', 'success': True,
+                        'project': project, 'note': 'sync initiated'})
+    else:
+        return jsonify({'method': 'syncup_project', 'success': False,
+                        'project': project, 'note': 'No project name provided'})
 
 
 @app.route('/update_project/basic/', methods=['POST', ])
@@ -145,7 +179,8 @@ def update_project_settings():
             job.kwargs['password'] = project_obj.get('rsync_password') or job.kwargs['rsync_password']
             break
 
-    return jsonify({'method': 'update_project', 'success': action_status, 'project': updated_name })
+    return jsonify({'method': 'update_project', 'success': action_status,
+                    'project': updated_name })
 
 
 @app.route('/update_project/schedule/', methods=['POST', ])
@@ -205,7 +240,8 @@ def update_project_schedule():
     # Add the job to the already running scheduler
     sched.add_cron_job(sync_project_from_upstream, kwargs=job.kwargs, **schedule_kwargs)
 
-    return jsonify({'method': 'update_project', 'success': action_status, 'project': project })
+    return jsonify({'method': 'update_project', 'success': action_status,
+                    'project': project })
 
 
 if __name__ == "__main__":
