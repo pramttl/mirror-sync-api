@@ -5,6 +5,8 @@ import simplejson as json
 from sync_utilities import rsync_call
 
 from apscheduler.scheduler import Scheduler
+from apscheduler.triggers import CronTrigger
+
 LOG_FILE = "logfile.txt"
 
 # Configuring a persistent job store and instantiating scheduler
@@ -82,6 +84,15 @@ def list_projects():
     jobs = sched.get_jobs()
     projects = []
     for job in jobs:
+
+        schedule_dict = dict(zip(CronTrigger.FIELD_NAMES, job.trigger.fields))
+        keys = schedule_dict.keys()
+        values = map(str, schedule_dict.values())
+        cleaned_schedule_dict = dict(zip(keys, values))
+        # Add cron parameters of the job along with the other parameters.
+        for key,value in schedule_dict.items():
+            job.kwargs['cron'] = cleaned_schedule_dict
+
         projects.append(job.kwargs)
     print projects
     return json.dumps(projects)

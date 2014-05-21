@@ -31,7 +31,7 @@ Projects are added via the api. The following parameters are specified:
     # This starts the local api server (in development mode)
 
 
-### Adding a project:
+### Adding a projects
 
 Send a `POST` request to of content-type `application/json` type to:
 
@@ -68,14 +68,39 @@ date by entering the following at bash prompt.
     date "+%Y-%m-%d %H:%M"
 
 
-### Listing projects:
+### Listing projects
 
 Just send a GET request to the follo. to list all available projects.
 
     http://127.0.0.1:5000/list_projects/
 
+Example:
 
-### Removing a project:
+    [
+      {
+        dest: "/home/pranjal/projects/osl/syncedup_temp/",
+        project: "ubuntu",
+        source: "documents",
+        host: "ftp.osuosl.org",
+        password: "password",
+        cron_params: {
+          week: "*",
+          hour: "*",
+          day_of_week: "*",
+          month: "*",
+          second: "0",
+          year: "*",
+          day: "*",
+          minute: "*"
+       }
+      },
+      ...
+    ]
+
+The above list shows one project. There could be several projects listed in your
+case depending on how many you have added.
+
+### Removing a project
 
 Projects can be removed from the API records, based on their name. To remove a
  project send a `POST` request to of content-type `application/json` type to:
@@ -93,7 +118,7 @@ If the project was present and successfully removed, 'success' parameter in the 
 otherwise it will be false.
 
 
-### Updating a project:
+### Updating a project
 
 ##### 1. Updating Basic Settings
 
