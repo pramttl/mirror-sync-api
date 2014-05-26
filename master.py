@@ -1,11 +1,13 @@
+from apscheduler.scheduler import Scheduler
+from apscheduler.triggers import CronTrigger
+
 from flask import Flask, request, jsonify
-app = Flask(__name__)
+from flask_sqlalchemy import SQLAlchemy
 
 import simplejson as json
 from sync_utilities import rsync_call, rsync_call_nonblocking
 
-from apscheduler.scheduler import Scheduler
-from apscheduler.triggers import CronTrigger
+app = Flask(__name__)
 
 LOG_FILE = "logfile.txt"
 

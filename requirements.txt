@@ -3,3 +3,5 @@ ConfigParser
 simplejson
 APScheduler
 requests
+SQLAlchemy
+Flask-SQLAlchemy
