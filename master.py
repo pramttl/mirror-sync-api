@@ -4,27 +4,46 @@ from apscheduler.triggers import CronTrigger
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
+import settings
 import simplejson as json
 from sync_utilities import rsync_call, rsync_call_nonblocking
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = settings.SQLALCHEMY_DATABASE_URI
+db = SQLAlchemy(app)
 
 LOG_FILE = "logfile.txt"
+import logging
 
+##################### SCHEDULER STARTUP #########################
 # Configuring a persistent job store and instantiating scheduler
+# Scheduler starts along with the app.
 config = {
     'apscheduler.jobstores.file.class': 'apscheduler.jobstores.shelve_store:ShelveJobStore',
     'apscheduler.jobstores.file.path': 'scheduledjobs.db'
 }
 
 sched = Scheduler(config)
-
-# Scheduler starts along with the app.
 sched.start()
 
-import logging
+
+############################  MODELS  #############################
+class SlaveNode(db.Model):
+    '''
+    Model that contains data related to FTP Host or slave that syncs
+    from the master.
+    '''
+    __tablename__ = 'slaves'
+    id = db.Column('slave_id', db.Integer, primary_key=True)
+    hostname = db.Column(db.String(60))
+    port = db.Column(db.String)
+
+    def __init__(self, hostname, port):
+        self.hostname = hostname
+        self.port = port
 
 
+####################### UTILITY FUNCTIONS ########################
 def sync_project_from_upstream(project, host, source, dest, password):
     full_source = project + '@' + host + '::' + source
 
@@ -32,6 +51,19 @@ def sync_project_from_upstream(project, host, source, dest, password):
     rsync_call(full_source, dest, password)
 
     # Tell all ftp hosts to sync from the master
+
+
+######################### API ENDPOINTS ##########################
+@app.route('/add_slave/', methods=['POST', ])
+def add_slave():
+    '''
+    Add a slave node or ftp host to the the FTP setup.
+    '''
+    obj = request.json
+    ftp_host = SlaveNode(obj["hostname"], obj["port"])
+    db.session.add(ftp_host)
+    db.session.commit()
+    return jsonify({'method': 'add_slave', 'success': True, 'hostname': hostname })
 
 
 @app.route('/add_project/', methods=['POST', ])
