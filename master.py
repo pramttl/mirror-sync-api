@@ -29,6 +29,8 @@ def sync_project_from_upstream(project, host, source, dest, password):
     print "Syncing up " + project
     rsync_call(full_source, dest, password)
 
+    # Tell all ftp hosts to sync from the master
+
 
 @app.route('/add_project/', methods=['POST', ])
 def add_project():
