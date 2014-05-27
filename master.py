@@ -130,11 +130,14 @@ def list_projects():
         keys = schedule_dict.keys()
         values = map(str, schedule_dict.values())
         cleaned_schedule_dict = dict(zip(keys, values))
+        job_kwargs_copy = job.kwargs.copy()
+
         # Add cron parameters of the job along with the other parameters.
         for key,value in schedule_dict.items():
-            job.kwargs['cron'] = cleaned_schedule_dict
+            job_kwargs_copy['cron'] = cleaned_schedule_dict
 
-        projects.append(job.kwargs)
+        # The copy stores the basic parameters as well as the schedule parameters.
+        projects.append(job_kwargs_copy)
     print projects
     return json.dumps(projects)
 
