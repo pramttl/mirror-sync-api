@@ -17,7 +17,7 @@ import logging
 
 ##################### SCHEDULER STARTUP #########################
 # Configuring a persistent job store and instantiating scheduler
-# Scheduler starts along with the app.
+# Scheduler starts along with the app (just before)
 config = {
     'apscheduler.jobstores.file.class': 'apscheduler.jobstores.shelve_store:ShelveJobStore',
     'apscheduler.jobstores.file.path': 'scheduledjobs.db'
@@ -44,11 +44,12 @@ class SlaveNode(db.Model):
 
 
 ####################### UTILITY FUNCTIONS ########################
-def sync_project_from_upstream(project, host, source, dest, password):
+def sync_project_from_upstream(project, host, source, dest, password,
+                               rsync_options):
     full_source = project + '@' + host + '::' + source
 
     print "Syncing up " + project
-    rsync_call(full_source, dest, password)
+    rsync_call(full_source, dest, password, rsync_options)
 
     # Tell all ftp hosts to sync from the master
 
@@ -82,12 +83,13 @@ def add_project():
                   'host': project_obj['host'],
                   'source': project_obj['source'],
                   'dest': project_obj['dest'],
-                  'password': project_obj['rsync_password'],}
+                  'password': project_obj['rsync_password'],
+                  'rsync_options': project_obj["rsync_options"],}
 
     # Reading the schedule parameters into a separate dictionary
     schedule_kwargs = {}
 
-    # This is to make sure that default APScheduler values are not overwritten by None
+    # This is to ensure that default APScheduler schedule values are not overwritten by None
     if project_obj.get('start_date'):
         schedule_kwargs['start_date'] = project_obj.get('start_date')
 
@@ -176,9 +178,10 @@ def syncup_project():
         project = job.kwargs['project']
         dest = job.kwargs['dest']
         password = job.kwargs['password']
+        rsync_options = project_obj["rsync_options"]
 
         full_source = project + '@' + host + '::' + source
-        rsync_call_nonblocking(full_source, dest, password)
+        rsync_call_nonblocking(full_source, dest, password, rsync_options)
 
         return jsonify({'method': 'syncup_project', 'success': True,
                         'project': project, 'note': 'sync initiated'})

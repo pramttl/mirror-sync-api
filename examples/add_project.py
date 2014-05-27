@@ -12,6 +12,7 @@ data = {
  "rsync_password": "iitbhu123",
  "minute": "*/3",
  "start_date": "2014-05-7 18:00",                    # $ date "+%Y-%m-%d %H:%M"
+ "rsync_options" : ['-avH','--delete'],
 }
 
 r = requests.post(url, data=json.dumps(data), headers=headers)

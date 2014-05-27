@@ -8,6 +8,7 @@ def rsync_call(
     full_source="54.245.124.177::documents/",
     dest=".",
     password="rsyncpassword",
+    rsync_options=['-avH','--delete','--progress'],
     ):
     '''
     Function responsible for calling rsync as a subprocess with the appropriate
@@ -19,7 +20,8 @@ def rsync_call(
     @password: The rsync password defined by the upstream source.
     '''
     os.environ['RSYNC_PASSWORD'] = password
-    cmd = 'rsync -avH --delete --progress ' + full_source + ' ' + dest
+    rsync_args_str = ' '.join(rsync_options)
+    cmd = 'rsync ' + rsync_args_str + ' ' + full_source + ' ' + dest
     rsync_child_process = subprocess.Popen(cmd,
                                            shell=True,
                                            stdin=subprocess.PIPE,
@@ -34,6 +36,7 @@ def rsync_call_nonblocking(
     full_source="54.245.124.177::documents/",
     dest=".",
     password="rsyncpassword",
+    rsync_options=['-avH','--delete','--progress'],
     ):
     '''
     Function responsible for calling rsync as a subprocess with the appropriate
@@ -44,7 +47,8 @@ def rsync_call_nonblocking(
     @password: The rsync password defined by the upstream source.
     '''
     os.environ['RSYNC_PASSWORD'] = password
-    cmd = 'rsync -avH --delete --progress ' + full_source + ' ' + dest
+    rsync_args_str = ' '.join(rsync_options)
+    cmd = 'rsync ' + rsync_args_str + ' ' + full_source + ' ' + dest
     rsync_child_process = subprocess.Popen(cmd,
                                            shell=True,
                                            stdin=subprocess.PIPE,

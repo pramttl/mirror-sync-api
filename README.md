@@ -77,12 +77,7 @@ Just send a GET request to the follo. to list all available projects.
 Example:
 
     [
-      {
-        dest: "/home/pranjal/projects/osl/syncedup_temp/",
-        project: "ubuntu",
-        source: "documents",
-        host: "ftp.osuosl.org",
-        password: "password",
+      { 
         cron: {
           week: "*",
           hour: "*",
@@ -92,7 +87,13 @@ Example:
           year: "*",
           day: "*",
           minute: "*"
-       }
+        },
+        dest: "/home/pranjal/projects/osl/syncedup_temp/",
+        rsync_options: ["-avH", "--delete"],
+        project: "ubuntu",
+        source: "documents",
+        host: "ftp.osuosl.org",
+        password: "password",
       },
       ...
     ]
