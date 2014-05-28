@@ -87,26 +87,10 @@ def add_project():
                   'rsync_options': project_obj["rsync_options"],}
 
     # Reading the schedule parameters into a separate dictionary
-    schedule_kwargs = {}
+    schedule_kwargs = project_obj['cron_options']
 
-    # This is to ensure that default APScheduler schedule values are not overwritten by None
-    if project_obj.get('start_date'):
-        schedule_kwargs['start_date'] = project_obj.get('start_date')
-
-    if project_obj.get('month'):
-        schedule_kwargs['month'] = project_obj.get('month')
-
-    if project_obj.get('day'):
-        schedule_kwargs['day'] = project_obj.get('day')
-
-    if project_obj.get('hour'):
-        schedule_kwargs['hour'] = project_obj.get('hour')
-
-    if project_obj.get('minute'):
-        schedule_kwargs['minute'] = project_obj.get('minute')
-
-    if project_obj.get('day_of_week'):
-        schedule_kwargs['day_of_week'] = project_obj.get('day_of_week')
+    #Todo: Might need a check to make sure all the sub parameters in the cron
+    # parameter are acceptable ie. belong to ['start_date', 'minute', 'hour, ...]
 
     logging.basicConfig()
 
@@ -134,7 +118,7 @@ def list_projects():
 
         # Add cron parameters of the job along with the other parameters.
         for key,value in schedule_dict.items():
-            job_kwargs_copy['cron'] = cleaned_schedule_dict
+            job_kwargs_copy['cron_options'] = cleaned_schedule_dict
 
         # The copy stores the basic parameters as well as the schedule parameters.
         projects.append(job_kwargs_copy)
