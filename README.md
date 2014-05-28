@@ -47,7 +47,12 @@ Example of a JSON request for adding a project:
          "rsync_password": "testpassword",
          "minute" : "*",
          "start_date": "2014-05-7 18:00",
+         "rsync_options" : ['-avH','--delete'],
         }
+
+Each project can have its own set of rsync args. These arguments mean the same as
+you would find in the [rsync](http://rsync.samba.org/ftp/rsync/rsync.html) man page.
+A list of these arguments is specified in the `rsync_options` paramter.
 
 The following response is returned if adding project is successful:
 
