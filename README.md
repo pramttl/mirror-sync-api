@@ -45,8 +45,11 @@ Example of a JSON request for adding a project:
          "host": "rsync.fedora.org",
          "dest": "/data/ftp/.1/",
          "rsync_password": "testpassword",
+         "cron": {
+           "minute": "*",
+           "start_date": "2014-05-7 18:00",
+          },
          "minute" : "*",
-         "start_date": "2014-05-7 18:00",
          "rsync_options" : ['-avH','--delete'],
         }
 
@@ -67,7 +70,9 @@ The following response is returned if adding project is successful:
 The API uses a cron like scheduling as defined in [APScheduler documentation](http://pythonhosted.org/APScheduler/cronschedule.html).
 Fields greater than the least significant explicitly defined field default to * 
 while lesser fields default to their minimum values except for `week` and `day_of_week` which default to *.
-A `start_date` can also be specified if required. You can obtain a valid start
+A `start_date` can also be specified if required which is the effective time
+syncing starts (start time included). If this parameter is not provided syncing 
+is in effect as soon as  project is added.. You can obtain a valid start
 date by entering the following at bash prompt.
 
     date "+%Y-%m-%d %H:%M"
