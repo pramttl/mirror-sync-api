@@ -70,10 +70,20 @@ def add_slave():
     Add a slave node or ftp host to the the FTP setup.
     '''
     obj = request.json
-    ftp_host = SlaveNode(obj["hostname"], obj["port"])
-    db.session.add(ftp_host)
-    db.session.commit()
-    return jsonify({'method': 'add_slave', 'success': True, 'hostname': obj['hostname'] })
+    slave_node = SlaveNode.query.filter(SlaveNode.hostname == obj["hostname"]).first()
+
+    if slave_node:
+        details = 'Already added'
+    else:
+        ftp_host = SlaveNode(obj['hostname'], obj['port'])
+        db.session.add(ftp_host)
+        db.session.commit()
+        details = 'Added to cluster'
+    
+
+    return jsonify({'method': 'add_slave', 'success': True, 
+                    'hostname': obj['hostname'],
+                    'details': details })
 
 
 @app.route('/list_slaves/', methods=['GET', ])
@@ -100,7 +110,7 @@ def remove_slave():
         db.session.commit()
         details = 'Found and deleted'
 
-    return jsonify({'method': 'remove_slave', 'success': action_status,
+    return jsonify({'method': 'remove_slave', 'success': True,
                     'details': details })
 
 
