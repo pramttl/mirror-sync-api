@@ -64,7 +64,7 @@ def add_slave():
     ftp_host = SlaveNode(obj["hostname"], obj["port"])
     db.session.add(ftp_host)
     db.session.commit()
-    return jsonify({'method': 'add_slave', 'success': True, 'hostname': hostname })
+    return jsonify({'method': 'add_slave', 'success': True, 'hostname': obj['hostname'] })
 
 
 @app.route('/add_project/', methods=['POST', ])
@@ -271,6 +271,7 @@ def update_project_schedule():
 
 
 if __name__ == "__main__":
+    db.create_all()
     app.debug = True
     app.run(use_reloader=False)
 
