@@ -1,25 +1,22 @@
 Open Source Lab: Simple Mirror Syncing API
 ------------------------------------------
 
-The following functionality is available at the moment
+The following functionality is available (or in progress) at the moment:
+
+**master.py** - Master Node API
+
+* Adding a slave node
+* Listing all slave nodes
+* Removing a slave node
 
 * Adding an upstream project
 * Removing a project
 * Updating a project
+* Listing all projects
 
-(Only master node API is available at the moment)
+**slave.py** - Slave Node API
 
-### Adding an upstream project
-
-Projects are added via the api. The following parameters are specified:
-
-* Project name
-* Host IP
-* Source (Absolute path on the host used to pull content)
-* Destination (Path on the master where the
-* interval_unit: {minutes, hours or days}
-* interval_value: an integer
-* start_date in posix format Eg: "2014-03-10 09:30"
+(Todo: Only master node API is available at the moment)
 
 
 ### Running the master node REST API
@@ -31,13 +28,27 @@ Projects are added via the api. The following parameters are specified:
     # This starts the local api server (in development mode)
 
 
+### Adding a slave node
+
+Send a `POST` request to of content-type `application/json` type to:
+
+    'http://localhost:5000/add_slave/'
+
+Example payload:
+
+    data = {
+     'hostname': 'localhost',
+     'port': '7000'
+    }
+
+
 ### Adding a project
 
 Send a `POST` request to of content-type `application/json` type to:
 
     http://127.0.0.1:5000/add_project/
 
-Example of a JSON request for adding a project:
+Example payload:
 
         {
          'project': 'fedora',
@@ -49,9 +60,19 @@ Example of a JSON request for adding a project:
            'minute': '*',
            'start_date': '2014-05-7 18:00',
           },
-         'minute' : '*',
          'rsync_options' : ['-avH','--delete'],
         }
+
+The parameter names are self-explanatory.
+
+* `project`: Project name
+* `host`: Hostname or IP address of the rsync source
+* `source`: Source or rsync_module + path (Absolute path on the host used to pull content)
+* `dest`: Destination (Path on the master node where the contents from source
+   folder are synced to)
+* `start_date` in posix format Eg: "2014-03-10 09:30"
+* `rsync_options`: are explained ahead. The format is tentative and can be changed
+  in subsequent versions of the api.
 
 Each project can have its own set of rsync args. These arguments mean the same as
 you would find in the [rsync](http://rsync.samba.org/ftp/rsync/rsync.html) man page.
