@@ -32,7 +32,7 @@ The following functionality is available (or in progress) at the moment:
 
 Send a `POST` request to of content-type `application/json` type to:
 
-    'http://127.0.0.1:5000/add_slave/'
+    http://127.0.0.1:5000/add_slave/
 
 Example payload:
 
@@ -46,6 +46,20 @@ Example payload:
 
 Just send a `GET` request to `/list_slaves/`
 This will list all the slave nodes added on master.
+
+
+### Removing a slave node
+
+Send a `POST` request to of content-type `application/json` type to:
+
+    http://127.0.0.1:5000/remove_slave/
+
+Example Payload:
+
+    data = {
+     'hostname': <slave_node_hostname>,
+    }
+
 
 ### Adding a project
 

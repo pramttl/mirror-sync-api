@@ -44,7 +44,7 @@ class SlaveNode(db.Model):
 
     @property
     def to_dict(self):
-       """Converts object to a dictionary"""
+       """Converts SlaveNode object to a dictionary"""
        return {
            'id': self.id,
            'hostname': self.hostname,
@@ -84,6 +84,24 @@ def list_slaves():
     ftp_hosts = SlaveNode.query.all()
     ftp_hosts = [obj.to_dict for obj in ftp_hosts]
     return json.dumps(ftp_hosts)
+
+
+@app.route('/remove_slave/', methods=['POST', ])
+def remove_slave():
+    '''
+    Remove a slave node from the ftp cluster.
+    '''
+    slave_hostname = request.json['hostname']
+    stored_slave = SlaveNode.query.filter(SlaveNode.hostname == slave_hostname).first()
+    details = ''
+
+    if stored_slave:
+        db.session.delete(stored_slave)
+        db.session.commit()
+        details = 'Found and deleted'
+
+    return jsonify({'method': 'remove_slave', 'success': action_status,
+                    'details': details })
 
 
 @app.route('/add_project/', methods=['POST', ])
