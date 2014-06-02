@@ -40,17 +40,17 @@ Send a `POST` request to of content-type `application/json` type to:
 Example of a JSON request for adding a project:
 
         {
-         "project": "fedora",
-         "source": "/ftp/package",
-         "host": "rsync.fedora.org",
-         "dest": "/data/ftp/.1/",
-         "rsync_password": "testpassword",
-         "cron_options": {
-           "minute": "*",
-           "start_date": "2014-05-7 18:00",
+         'project': 'fedora',
+         'source': '/ftp/package',
+         'host': 'rsync.fedora.org',
+         'dest': '/data/ftp/.1/',
+         'rsync_password': 'testpassword',
+         'cron_options': {
+           'minute': '*',
+           'start_date': '2014-05-7 18:00',
           },
-         "minute" : "*",
-         "rsync_options" : ['-avH','--delete'],
+         'minute' : '*',
+         'rsync_options' : ['-avH','--delete'],
         }
 
 Each project can have its own set of rsync args. These arguments mean the same as
