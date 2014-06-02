@@ -42,6 +42,15 @@ class SlaveNode(db.Model):
         self.hostname = hostname
         self.port = port
 
+    @property
+    def to_dict(self):
+       """Converts object to a dictionary"""
+       return {
+           'id': self.id,
+           'hostname': self.hostname,
+           'port': self.port,
+       }
+
 
 ####################### UTILITY FUNCTIONS ########################
 def sync_project_from_upstream(project, host, source, dest, password,
@@ -65,6 +74,16 @@ def add_slave():
     db.session.add(ftp_host)
     db.session.commit()
     return jsonify({'method': 'add_slave', 'success': True, 'hostname': obj['hostname'] })
+
+
+@app.route('/list_slaves/', methods=['GET', ])
+def list_slaves():
+    '''
+    Returns a list of all slave objects in JSON format.
+    '''
+    ftp_hosts = SlaveNode.query.all()
+    ftp_hosts = [obj.to_dict for obj in ftp_hosts]
+    return json.dumps(ftp_hosts)
 
 
 @app.route('/add_project/', methods=['POST', ])
