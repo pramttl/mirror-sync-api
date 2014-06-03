@@ -4,6 +4,7 @@ from apscheduler.triggers import CronTrigger
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
+import requests
 import settings
 import simplejson as json
 from sync_utilities import rsync_call, rsync_call_nonblocking
@@ -58,10 +59,28 @@ def sync_project_from_upstream(project, host, source, dest, password,
     full_source = project + '@' + host + '::' + source
 
     print "Syncing up " + project
+
+    # Blocking rsync call
     rsync_call(full_source, dest, password, rsync_options)
 
-    # Tell all ftp hosts to sync from the master
+    ftp_hosts = SlaveNode.query.all()
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
+    # Tell all ftp hosts to sync from the master
+    for node in ftp_hosts:
+        slave_api_url = 'http://' + node.hostname + ':' + node.port + '/sync_from_master/'
+        data = {
+         "project": project,
+         "source": dest, # rsync module
+         "host": <MASTER_NODE_HOSTNAME>
+         "rsync_password": settings.MASTER_RSYNCD_PASSWORD
+         "rsync_options" : ['-avH','--delete'],
+          }
+
+        # Slave api rsync should be non blocking so that this call returns immediately.
+        r = requests.post(slave_api_url, data=json.dumps(data), headers=headers)
+
+        # Analyze respone
 
 ######################### API ENDPOINTS ##########################
 @app.route('/add_slave/', methods=['POST', ])
