@@ -14,10 +14,12 @@ The following functionality is available (or in progress) at the moment:
 * Updating a project
 * Listing all projects
 
+
 **slave.py** - Slave Node API
 
-(Todo: Only master node API is available at the moment)
-
+Slave Node API runs on port 7000 by default. There should be no need to manually
+interact with the slave node API. It is primarily used by the master for inter
+system 
 
 ### Running the master node REST API
 
@@ -32,7 +34,19 @@ Note: Make sure you edit the settings in `settings.py` file before starting
 the master. The settings includes information like *hostname* of the master node.
 Rsync daemon password of master node rsync daemon.
 
+Master node API runs on port 5000 by default.
+
+### Running the slave node REST API
+
+On each of the slave nodes start the slave node API.
+
+    python slave.py
+
+
 ### Adding a slave node
+
+The master needs to be aware of the host of each of the slave node and the port
+where slave node API is running, hence adding slave nodes on the master is important.
 
 Send a `POST` request to of content-type `application/json` type to:
 

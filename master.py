@@ -71,7 +71,7 @@ def sync_project_from_upstream(project, host, source, dest, password,
         slave_api_url = 'http://' + node.hostname + ':' + node.port + '/sync_from_master/'
         data = {
          "project": project,
-         "source": dest, # rsync module
+          #"source": settings.MASTER_RSYNCD_MODULE + '/' + project, # rsync module
          "host": settings.MASTER_HOSTNAME,
          "rsync_password": settings.MASTER_RSYNCD_PASSWORD,
          "rsync_options" : ['-avH','--delete'],
