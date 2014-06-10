@@ -72,8 +72,8 @@ def sync_project_from_upstream(project, host, source, dest, password,
         data = {
          "project": project,
          "source": dest, # rsync module
-         "host": <MASTER_NODE_HOSTNAME>
-         "rsync_password": settings.MASTER_RSYNCD_PASSWORD
+         "host": settings.MASTER_HOSTNAME,
+         "rsync_password": settings.MASTER_RSYNCD_PASSWORD,
          "rsync_options" : ['-avH','--delete'],
           }
 

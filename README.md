@@ -28,6 +28,10 @@ The following functionality is available (or in progress) at the moment:
     # This starts the local api server (in development mode)
 
 
+Note: Make sure you edit the settings in `settings.py` file before starting
+the master. The settings includes information like *hostname* of the master node.
+Rsync daemon password of master node rsync daemon.
+
 ### Adding a slave node
 
 Send a `POST` request to of content-type `application/json` type to:
