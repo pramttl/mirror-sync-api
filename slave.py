@@ -27,7 +27,7 @@ def sync_project_from_upstream():
 
     print "Slave syncing up " + project
 
-    dest = settings.SLAVE_PUBLIC_DIR + project
+    dest = settings.SLAVE_PUBLIC_DIR
     ## Todo: Enable actualy syncing after testing other parts.
     rsync_call_nonblocking(full_source, dest, rsync_password)
     # As soon as rsync completes we could hit another endpoint on the master

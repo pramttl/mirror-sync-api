@@ -57,6 +57,7 @@ class SlaveNode(db.Model):
 def sync_project_from_upstream(project, host, source, dest, password,
                                rsync_options):
     full_source = project + '@' + host + '::' + source
+    dest = dest + '/' + project
 
     print "Syncing up " + project
 
@@ -229,7 +230,7 @@ def syncup_project():
         host = job.kwargs['host']
         source = job.kwargs['source']
         project = job.kwargs['project']
-        dest = job.kwargs['dest']
+        dest = job.kwargs['dest'] + '/' + project
         password = job.kwargs['password']
         rsync_options = project_obj["rsync_options"]
 

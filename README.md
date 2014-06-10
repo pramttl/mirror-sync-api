@@ -8,7 +8,6 @@ The following functionality is available (or in progress) at the moment:
 * Adding a slave node
 * Listing all slave nodes
 * Removing a slave node
-
 * Adding an upstream project
 * Removing a project
 * Updating a project
