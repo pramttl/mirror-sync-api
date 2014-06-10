@@ -12,7 +12,7 @@ data = {
  "rsync_password": "iitbhu123",
  "rsync_options" : ['-avH','--delete'],
  "cron_options": {
-      "minute": "*/3",
+      "minute": "*",
       "start_date": "2014-05-7 18:00",                # $ date "+%Y-%m-%d %H:%M"
      }
   }
