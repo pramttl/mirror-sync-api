@@ -56,6 +56,13 @@ class SlaveNode(db.Model):
 ####################### UTILITY FUNCTIONS ########################
 def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password,
                                rsync_options):
+    '''
+    Sync's project from upstream and after upstream-master syncing is over,
+    instructs each of the slave nodes to sync from the master.
+
+    Note: The same rsync_options are used for upstream-master syncing as for
+    the master-slave syncing.
+    '''
     full_source = project + '@' + rsync_host + '::' + rsync_module
     dest = dest + '/' + project
 
@@ -75,7 +82,7 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password
           #"rsync_module": settings.MASTER_RSYNCD_MODULE + '/' + project, # rsync module
          "rsync_host": settings.MASTER_HOSTNAME,
          "rsync_password": settings.MASTER_RSYNCD_PASSWORD,
-         "rsync_options" : ['-avH','--delete'],
+         "rsync_options" : rsync_options,
           }
 
         # Slave api rsync should be non blocking so that this call returns immediately.
