@@ -9,7 +9,7 @@ headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 data = {
  "project": "ubuntu",
  "new_name": "fedora",
- "source": "new_module_name",                         # rsync module
+ "rsync_module": "new_module_name",                         # rsync module
  "host": "xlstosql.brightants.com",
  "dest": "/home/pranjal/projects/osl/arrays/1", # "/data/ftp/.1/",
 }

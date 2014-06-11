@@ -88,7 +88,7 @@ Example payload:
 
         {
          'project': 'fedora',
-         'source': '/ftp/package',
+         'rsync_module': '<rsync_module_name>/relative_path',
          'host': 'rsync.fedora.org',
          'dest': '/data/ftp/.1/',
          'rsync_password': 'testpassword',
@@ -103,7 +103,8 @@ The parameter names are self-explanatory.
 
 * `project`: Project name
 * `host`: Hostname or IP address of the rsync source
-* `source`: Source or rsync_module + path (Absolute path on the host used to pull content)
+* `rsync_module`: Note that this parameter is not just rsync_module name but can
+   also be rsync_module + relative path from the module on the host machine.
 * `dest`: Destination (Path on the master node where the contents from source
    folder are synced to)
 * `start_date` in posix format Eg: "2014-03-10 09:30"
@@ -164,7 +165,7 @@ Example:
         dest: "/home/pranjal/projects/osl/syncedup_temp/",
         rsync_options: ["-avH", "--delete"],
         project: "ubuntu",
-        source: "documents",
+        rsync_module: "documents",
         host: "ftp.osuosl.org",
         password: "password",
       },
@@ -202,7 +203,7 @@ Example json payload:
         data = {
          "project": "ubuntu",
          "new_name": "fedora",
-         "source": "new_module_name",                         # rsync module
+         "rsync_module": "new_module_name",                         # rsync module
          "host": "xlstosql.brightants.com",
          "dest": "/home/pranjal/projects/osl/syncedup_temp/", # "/data/ftp/.1/",
         }
