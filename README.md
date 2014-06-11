@@ -44,7 +44,7 @@ On each of the slave nodes start the slave node API.
 
 ### Adding a slave node
 
-The master needs to be aware of the host of each of the slave node and the port
+The master needs to be aware of the hostname of each of the slave node and the port
 where slave node API is running, hence adding slave nodes on the master is important.
 
 Send a `POST` request to of content-type `application/json` type to:
@@ -89,7 +89,7 @@ Example payload:
         {
          'project': 'fedora',
          'rsync_module': '<rsync_module_name>/relative_path',
-         'host': 'rsync.fedora.org',
+         'rsync_host': 'rsync.fedora.org',
          'dest': '/data/ftp/.1/',
          'rsync_password': 'testpassword',
          'cron_options': {
@@ -102,7 +102,7 @@ Example payload:
 The parameter names are self-explanatory.
 
 * `project`: Project name
-* `host`: Hostname or IP address of the rsync source
+* `rsync_host`: Hostname or IP address of the rsync source
 * `rsync_module`: Note that this parameter is not just rsync_module name but can
    also be rsync_module + relative path from the module on the host machine.
 * `dest`: Destination (Path on the master node where the contents from source
@@ -166,7 +166,7 @@ Example:
         rsync_options: ["-avH", "--delete"],
         project: "ubuntu",
         rsync_module: "documents",
-        host: "ftp.osuosl.org",
+        rsync_host: "ftp.osuosl.org",
         password: "password",
       },
       ...
@@ -204,7 +204,7 @@ Example json payload:
          "project": "ubuntu",
          "new_name": "fedora",
          "rsync_module": "new_module_name",                         # rsync module
-         "host": "xlstosql.brightants.com",
+         "rsync_host": "xlstosql.brightants.com",
          "dest": "/home/pranjal/projects/osl/syncedup_temp/", # "/data/ftp/.1/",
         }
 

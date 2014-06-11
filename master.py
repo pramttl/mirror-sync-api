@@ -54,9 +54,9 @@ class SlaveNode(db.Model):
 
 
 ####################### UTILITY FUNCTIONS ########################
-def sync_project_from_upstream(project, host, rsync_module, dest, password,
+def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password,
                                rsync_options):
-    full_source = project + '@' + host + '::' + rsync_module
+    full_source = project + '@' + rsync_host + '::' + rsync_module
     dest = dest + '/' + project
 
     print "Syncing up " + project
@@ -73,7 +73,7 @@ def sync_project_from_upstream(project, host, rsync_module, dest, password,
         data = {
          "project": project,
           #"rsync_module": settings.MASTER_RSYNCD_MODULE + '/' + project, # rsync module
-         "host": settings.MASTER_HOSTNAME,
+         "rsync_host": settings.MASTER_HOSTNAME,
          "rsync_password": settings.MASTER_RSYNCD_PASSWORD,
          "rsync_options" : ['-avH','--delete'],
           }
@@ -140,14 +140,14 @@ def add_project():
     Schedules an upstream project for syncing (periodic)
 
     @project: Name of the unix user of the upstream project server
-    @host: IP or hostname of the upstream rsync provider
+    @rsync_host: IP or hostname of the upstream rsync provider
     @rsync_module: <rsync_module_name>/relative_path_from_there
     '''
     project_obj = request.json
     project = project_obj["project"]
 
     job_kwargs = {'project': project,
-                  'host': project_obj['host'],
+                  'rsync_host': project_obj['rsync_host'],
                   'rsync_module': project_obj['rsync_module'],
                   'dest': project_obj['dest'],
                   'password': project_obj['rsync_password'],
@@ -227,14 +227,14 @@ def syncup_project():
             if job.kwargs['project'] == project:
                 break
 
-        host = job.kwargs['host']
+        rsync_host = job.kwargs['rsync_host']
         rsync_module = job.kwargs['rsync_module']
         project = job.kwargs['project']
         dest = job.kwargs['dest'] + '/' + project
         password = job.kwargs['password']
         rsync_options = project_obj["rsync_options"]
 
-        full_source = project + '@' + host + '::' + rsync_module
+        full_source = project + '@' + rsync_host + '::' + rsync_module
         rsync_call_nonblocking(full_source, dest, password, rsync_options)
 
         return jsonify({'method': 'syncup_project', 'success': True,
@@ -248,7 +248,7 @@ def syncup_project():
 def update_project_settings():
     '''
     Updating basic settings of a project scheduled for syncing.
-    - Updating name, rsync_module, host, dest is allowed.
+    - Updating name, rsync_module, rsync_host, dest is allowed.
     - The cron schedule parameters cannot be changed from this endpoint.
 
     @project: (Required) Orignal name of the project.
@@ -266,7 +266,7 @@ def update_project_settings():
     for job in jobs:
         if job.kwargs['project'] == project_obj["project"]:
             job.kwargs['project'] = updated_name
-            job.kwargs['host'] = project_obj.get('host') or job.kwargs['host']
+            job.kwargs['rsync_host'] = project_obj.get('rsync_host') or job.kwargs['rsync_host']
             job.kwargs['rsync_module'] = project_obj.get('rsync_module') or job.kwargs['rsync_module']
             job.kwargs['dest'] = project_obj.get('dest') or job.kwargs['dest']
             job.kwargs['password'] = project_obj.get('rsync_password') or job.kwargs['rsync_password']

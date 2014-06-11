@@ -7,7 +7,7 @@ headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 data = {
  "project": "ubuntu",
  "rsync_module": "documents",                              # rsync module
- "host": "xlstosql.brightants.com",
+ "rsync_host": "xlstosql.brightants.com",
  "dest": "/home/pranjal/projects/osl/arrays/1",      # "/data/ftp/.1/",
  "rsync_password": "iitbhu123",
  "rsync_options" : ['-avH','--delete'],

@@ -10,7 +10,7 @@ data = {
  "project": "ubuntu",
  "new_name": "fedora",
  "rsync_module": "new_module_name",                         # rsync module
- "host": "xlstosql.brightants.com",
+ "rsync_host": "xlstosql.brightants.com",
  "dest": "/home/pranjal/projects/osl/arrays/1", # "/data/ftp/.1/",
 }
 
