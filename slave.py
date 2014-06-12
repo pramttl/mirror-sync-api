@@ -19,8 +19,6 @@ def sync_project_from_upstream():
     project = details['project']
     rsync_password = details['rsync_password']
     rsync_options = details['rsync_options']
-    
-    #XXX: Facing problems when destination directory does not exist.
     full_source = settings.SLAVE_USER + '@' + master_host + '::' + \
                   settings.MASTER_RSYNCD_MODULE + '/' + project
 
@@ -29,8 +27,13 @@ def sync_project_from_upstream():
     print "Slave syncing up " + project
 
     dest = settings.SLAVE_PUBLIC_DIR
-    ## Todo: Enable actualy syncing after testing other parts.
-    rsync_call_nonblocking(full_source, dest, rsync_password, rsync_options)
+
+    # Pull the data from the master node via rsync
+    rsync_call_nonblocking(full_source, dest, rsync_password,
+                           rsync_options.get('basic', []),
+                           rsync_options.get('defaults', settings.RSYNC_DEFAULT_OPTIONS),
+                           rsync_options.get('delete', settings.RSYNC_DELETE_OPTION))
+
     # As soon as rsync completes we could hit another endpoint on the master
     # node to inform it that *so and so* slave node has completed rsync.
 

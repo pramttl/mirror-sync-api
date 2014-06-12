@@ -96,7 +96,11 @@ Example payload:
            'minute': '*',
            'start_date': '2014-05-7 18:00',
           },
-         'rsync_options' : ['-avH','--delete'],
+         'rsync_options' : {
+           'basic': [],
+           'defaults': ['-avH',],
+           'delete': '--delete',
+          },
         }
 
 The parameter names are self-explanatory.
@@ -108,12 +112,19 @@ The parameter names are self-explanatory.
 * `dest`: Destination (Path on the master node where the contents from source
    folder are synced to)
 * `start_date` in posix format Eg: "2014-03-10 09:30"
-* `rsync_options`: are explained ahead. The format is tentative and can be changed
-  in subsequent versions of the api.
+* `rsync_options`: are the extra rsync args that are provided immediately after
+   the rsync command in the standard command line execution. In this API the
+   `rsync_options` are divied into 3 parts (that should not contain common
+   parameters):
 
-Each project can have its own set of rsync args. These arguments mean the same as
+   * `defaults`: The API sets some rsync flags by default. These can be overrided
+           by setting this list parameter as a blank list or anything as required.
+   * `basic`: Standard list of rsync options.
+   * `delete`: There are 7 mutually exclusive delete options in rsync.
+      Since only one of them can be used at a time, this parameter is a list.
+
+Each project can have its own set of rsync options. These arguments mean the same as
 you would find in the [rsync](http://rsync.samba.org/ftp/rsync/rsync.html) man page.
-A list of these arguments is specified in the `rsync_options` paramter.
 
 The following response is returned if adding project is successful:
 
@@ -163,7 +174,11 @@ Example:
           minute: "*"
         },
         dest: "/home/pranjal/projects/osl/syncedup_temp/",
-        rsync_options: ["-avH", "--delete"],
+        rsync_options : {
+              'basic': [],
+              'defaults': ['-avH',],
+              'delete_option': '--delete',
+            },
         project: "ubuntu",
         rsync_module: "documents",
         rsync_host: "ftp.osuosl.org",

@@ -8,7 +8,9 @@ def rsync_call(
     full_source="54.245.124.177::documents/",
     dest=".",
     password="rsyncpassword",
-    rsync_options=['-avH','--delete','--progress'],
+    rsync_options_basic=[],
+    rsync_options_default=['avH',],
+    rsync_delete_option='--delete',
     ):
     '''
     Function responsible for calling rsync as a subprocess with the appropriate
@@ -20,6 +22,9 @@ def rsync_call(
     @password: The rsync password defined by the upstream source.
     '''
     os.environ['RSYNC_PASSWORD'] = password
+    rsync_options = set(rsync_options_basic + rsync_options_default + [rsync_delete_option,])
+    # print 'rsync_options:', rsync_options  #XXX: Remove this after testing
+
     rsync_args_str = ' '.join(rsync_options)
     cmd = 'rsync ' + rsync_args_str + ' ' + full_source + ' ' + dest
     rsync_child_process = subprocess.Popen(cmd,
@@ -36,7 +41,9 @@ def rsync_call_nonblocking(
     full_source="54.245.124.177::documents/",
     dest=".",
     password="rsyncpassword",
-    rsync_options=['-avH','--delete','--progress'],
+    rsync_options_basic=[],
+    rsync_options_default=['avH',],
+    rsync_delete_option='--delete',
     ):
     '''
     Function responsible for calling rsync as a subprocess with the appropriate
@@ -47,6 +54,9 @@ def rsync_call_nonblocking(
     @password: The rsync password defined by the upstream source.
     '''
     os.environ['RSYNC_PASSWORD'] = password
+    rsync_options = set(rsync_options_basic + rsync_options_default + [rsync_delete_option,])
+    # print 'rsync_options:', rsync_options
+
     rsync_args_str = ' '.join(rsync_options)
     cmd = 'rsync ' + rsync_args_str + ' ' + full_source + ' ' + dest
     rsync_child_process = subprocess.Popen(cmd,

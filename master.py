@@ -69,7 +69,10 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password
     print "Syncing up " + project
 
     # Blocking rsync call
-    rsync_call(full_source, dest, password, rsync_options)
+    rsync_call(full_source, dest, password,
+               rsync_options.get('basic', []),
+               rsync_options.get('defaults', settings.RSYNC_DEFAULT_OPTIONS),
+               rsync_options.get('delete', settings.RSYNC_DELETE_OPTION))
 
     ftp_hosts = SlaveNode.query.all()
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
@@ -78,11 +81,11 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password
     for node in ftp_hosts:
         slave_api_url = 'http://' + node.hostname + ':' + node.port + '/sync_from_master/'
         data = {
-         "project": project,
+         'project': project,
           #"rsync_module": settings.MASTER_RSYNCD_MODULE + '/' + project, # rsync module
-         "rsync_host": settings.MASTER_HOSTNAME,
-         "rsync_password": settings.MASTER_RSYNCD_PASSWORD,
-         "rsync_options" : rsync_options,
+         'rsync_host': settings.MASTER_HOSTNAME,
+         'rsync_password': settings.MASTER_RSYNCD_PASSWORD,
+         'rsync_options' : rsync_options,
           }
 
         # Slave api rsync should be non blocking so that this call returns immediately.
@@ -158,7 +161,7 @@ def add_project():
                   'rsync_module': project_obj['rsync_module'],
                   'dest': project_obj['dest'],
                   'password': project_obj['rsync_password'],
-                  'rsync_options': project_obj["rsync_options"],}
+                  'rsync_options': project_obj.get('rsync_options', {}),}
 
     # Reading the schedule parameters into a separate dictionary
     schedule_kwargs = project_obj['cron_options']
@@ -239,10 +242,13 @@ def syncup_project():
         project = job.kwargs['project']
         dest = job.kwargs['dest'] + '/' + project
         password = job.kwargs['password']
-        rsync_options = project_obj["rsync_options"]
+        rsync_options = project_obj.get('rsync_options')
 
         full_source = project + '@' + rsync_host + '::' + rsync_module
-        rsync_call_nonblocking(full_source, dest, password, rsync_options)
+        rsync_call_nonblocking(full_source, dest, password,
+                               rsync_options.get('basic', []),
+                               rsync_options.get('defaults', settings.RSYNC_DEFAULT_OPTIONS),
+                               rsync_options.get('delete', settings.RSYNC_DELETE_OPTION))
 
         return jsonify({'method': 'syncup_project', 'success': True,
                         'project': project, 'note': 'sync initiated'})
