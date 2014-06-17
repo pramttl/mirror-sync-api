@@ -30,10 +30,10 @@ sched.start()
 
 ############################  MODELS  #############################
 class SlaveNode(db.Model):
-    '''
+    """
     Model that contains data related to FTP Host or slave that syncs
     from the master.
-    '''
+    """
     __tablename__ = 'slaves'
     id = db.Column('slave_id', db.Integer, primary_key=True)
     hostname = db.Column(db.String(60))
@@ -56,13 +56,13 @@ class SlaveNode(db.Model):
 ####################### UTILITY FUNCTIONS ########################
 def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password,
                                rsync_options):
-    '''
+    """
     Sync's project from upstream and after upstream-master syncing is over,
     instructs each of the slave nodes to sync from the master.
 
     Note: The same rsync_options are used for upstream-master syncing as for
     the master-slave syncing.
-    '''
+    """
     full_source = project + '@' + rsync_host + '::' + rsync_module
     dest = dest + '/' + project
 
@@ -96,9 +96,9 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password
 ######################### API ENDPOINTS ##########################
 @app.route('/add_slave/', methods=['POST', ])
 def add_slave():
-    '''
+    """
     Add a slave node or ftp host to the the FTP setup.
-    '''
+    """
     obj = request.json
     slave_node = SlaveNode.query.filter(SlaveNode.hostname == obj["hostname"]).first()
 
@@ -118,9 +118,9 @@ def add_slave():
 
 @app.route('/list_slaves/', methods=['GET', ])
 def list_slaves():
-    '''
+    """
     Returns a list of all slave objects in JSON format.
-    '''
+    """
     ftp_hosts = SlaveNode.query.all()
     ftp_hosts = [obj.to_dict for obj in ftp_hosts]
     return json.dumps(ftp_hosts)
@@ -128,9 +128,9 @@ def list_slaves():
 
 @app.route('/remove_slave/', methods=['POST', ])
 def remove_slave():
-    '''
+    """
     Remove a slave node from the ftp cluster.
-    '''
+    """
     slave_hostname = request.json['hostname']
     stored_slave = SlaveNode.query.filter(SlaveNode.hostname == slave_hostname).first()
     details = ''
@@ -146,13 +146,13 @@ def remove_slave():
 
 @app.route('/add_project/', methods=['POST', ])
 def add_project():
-    '''
+    """
     Schedules an upstream project for syncing (periodic)
 
     @project: Name of the unix user of the upstream project server
     @rsync_host: IP or hostname of the upstream rsync provider
     @rsync_module: <rsync_module_name>/relative_path_from_there
-    '''
+    """
     project_obj = request.json
     project = project_obj["project"]
 
@@ -180,9 +180,9 @@ def add_project():
 
 @app.route('/list_projects/', methods=['GET', ])
 def list_projects():
-    '''
+    """
     List all the upstream projects scheduled for syncing.
-    '''
+    """
     jobs = sched.get_jobs()
     projects = []
     for job in jobs:
@@ -205,9 +205,9 @@ def list_projects():
 
 @app.route('/remove_project/', methods=['POST', ])
 def remove_project():
-    '''
+    """
     Remove an upstream project from the master node.
-    '''
+    """
     project_obj = request.json
     project = project_obj['project']
 
@@ -225,9 +225,9 @@ def remove_project():
 
 @app.route('/syncup/', methods=['GET', ])
 def syncup_project():
-    '''
+    """
     Allows to explicitly initiate syncing for a project.
-    '''
+    """
     project = request.args.get('project')
 
     if project:
@@ -259,7 +259,7 @@ def syncup_project():
 
 @app.route('/update_project/basic/', methods=['POST', ])
 def update_project_settings():
-    '''
+    """
     Updating basic settings of a project scheduled for syncing.
     - Updating name, rsync_module, rsync_host, dest is allowed.
     - The cron schedule parameters cannot be changed from this endpoint.
@@ -267,7 +267,7 @@ def update_project_settings():
     @project: (Required) Orignal name of the project.
     @new_name: (Optional) New name of the project.
     Other parameters are same as in add_project endpoint.
-    '''
+    """
     project_obj = request.json
 
     # If there is any new project name then use it else use the old project name.
@@ -291,7 +291,7 @@ def update_project_settings():
 
 @app.route('/update_project/schedule/', methods=['POST', ])
 def update_project_schedule():
-    '''
+    """
     To update the schedule parameters while updating a project.
 
     Rule: Specify all the schedule parameters again while updating. The previous
@@ -300,7 +300,7 @@ def update_project_schedule():
     The only way to update the schedule parameters in Apscheduler v2 is to delete
     the job and add it again with the new parameters. (Apscheduler v3 should have a
     direct way to do this)
-    '''
+    """
     project_obj = request.json
 
     # If there is any new project name then use it else use the old project name.

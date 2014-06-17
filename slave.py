@@ -7,10 +7,10 @@ import settings
 
 @app.route('/sync_from_master/', methods=['POST', ])
 def sync_project_from_upstream():
-    '''
+    """
     An API endpoint that is used by the master to tell the
     slave nodes to sync from it.
-    '''
+    """
     details = request.json
 
     master_host = settings.MASTER_HOSTNAME
