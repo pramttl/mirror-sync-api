@@ -86,6 +86,7 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password
          'rsync_host': settings.MASTER_HOSTNAME,
          'rsync_password': settings.MASTER_RSYNCD_PASSWORD,
          'rsync_options' : rsync_options,
+         'slave_id': node.id,
           }
 
         # Slave api rsync should be non blocking so that this call returns immediately.
@@ -100,16 +101,18 @@ def add_slave():
     Add a slave node or ftp host to the the FTP setup.
     """
     obj = request.json
-    slave_node = SlaveNode.query.filter(SlaveNode.hostname == obj["hostname"]).first()
+    hostname = obj["hostname"]
+    slave_node = SlaveNode.query.filter(SlaveNode.hostname == hostname).first()
 
     if slave_node:
         details = 'Already added'
+        print('Slave already present')
     else:
         ftp_host = SlaveNode(obj['hostname'], obj['port'])
         db.session.add(ftp_host)
         db.session.commit()
         details = 'Added to cluster'
-    
+        print('Slave added')
 
     return jsonify({'method': 'add_slave', 'success': True, 
                     'hostname': obj['hostname'],
@@ -349,7 +352,23 @@ def update_project_schedule():
                     'project': project})
 
 
+@app.route('/slave_rsync_complete/', methods=['POST', ])
+def slave_rsync_complete():
+    """
+    Remove an upstream project from the master node.
+    """
+    details = request.json
+    slave_id = details['slave_id']
+    project = details['project']
+    slave_node = SlaveNode.query.filter_by(id=slave_id).first()
+
+    #XXX: Register that the slave has synced xyz project to the db.
+    print('%s -synced- %s'%(slave_node.hostname, project))
+
+    return jsonify({'method': 'slave_rsync_complete', 'success': True})
+
+
 if __name__ == "__main__":
     db.create_all()
     app.debug = True
-    app.run(use_reloader=False)
+    app.run(port=settings.MASTER_PORT, use_reloader=False)

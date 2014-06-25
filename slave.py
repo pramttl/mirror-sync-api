@@ -1,9 +1,32 @@
 from flask import Flask, request, jsonify
 app = Flask(__name__)
 
+import requests
 from sync_utilities import rsync_call, rsync_call_nonblocking
 import settings
+import simplejson as json
 
+# Every slave api instance can have only one master host at a time
+master_hostname = settings.MASTER_HOSTNAME
+master_port = settings.MASTER_PORT
+
+####################### UTILITY FUNCTIONS ########################
+
+def inform_master_sync_complete(slave_id, project):
+    """
+    Informs the relevant master API endpoint that the slave has completed sync
+    for xyz project.
+    """
+    url = 'http://%s:%s/slave_rsync_complete/'%(master_hostname, str(master_port))
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    data = {
+     'slave_id': slave_id,
+     'project': project,
+    }
+    r = requests.post(url, data=json.dumps(data), headers=headers)
+
+
+######################### API ENDPOINTS ##########################
 
 @app.route('/sync_from_master/', methods=['POST', ])
 def sync_project_from_upstream():
@@ -13,13 +36,12 @@ def sync_project_from_upstream():
     """
     details = request.json
 
-    master_host = settings.MASTER_HOSTNAME
-
     # source = details['source']
     project = details['project']
     rsync_password = details['rsync_password']
     rsync_options = details['rsync_options']
-    full_source = '%s@%s::%s/%s' % (settings.SLAVE_USER, master_host, \
+    slave_id = details['slave_id']
+    full_source = '%s@%s::%s/%s' % (settings.SLAVE_USER, master_hostname, \
                                   settings.MASTER_RSYNCD_MODULE, project)
 
     print('Full_source: %s' % (full_source,))
@@ -35,11 +57,12 @@ def sync_project_from_upstream():
 
     # As soon as rsync completes we could hit another endpoint on the master
     # node to inform it that *so and so* slave node has completed rsync.
+    inform_master_sync_complete(slave_id, project)
 
     return jsonify({'success': True, 'details': 'Rsync call initiated on all slave nodes' })
 
 
 if __name__ == "__main__":
     app.debug = True
-    app.run(port=7000, use_reloader=False)
-
+    #autoregister_to_master()
+    app.run(port=settings.SLAVE_PORT, use_reloader=False)

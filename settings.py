@@ -6,9 +6,11 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + PROJECT_ROOT + '/master.db'
 MASTER_HOSTNAME ='localhost'
 MASTER_RSYNCD_PASSWORD = 'iitbhu123'
 MASTER_RSYNCD_MODULE = 'all1'
+MASTER_PORT = 5000
 
 SLAVE_PUBLIC_DIR = '/home/pranjal/projects/osl/slave_node/public_html/'
 SLAVE_USER = 'pranjal'
+SLAVE_PORT = 7000
 
 
 ####### RSYNC OPTIONS ##########
