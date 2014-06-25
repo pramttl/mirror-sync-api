@@ -16,9 +16,18 @@ The following functionality is available (or in progress) at the moment:
 
 **slave.py** - Slave Node API
 
-Slave Node API runs on port 7000 by default. There should be no need to manually
-interact with the slave node API. It is primarily used by the master for inter
-system 
+### Clone project and edit settings
+
+Note: **These steps only needs to be performed during setup**
+
+* Clone the repository on the master node.
+* Start an rsync daemon on the master node with an appropriate rsyncd conf file and password.
+* Keep only one rsyncd module on the master node. That is not only a requirement, but should be sufficient.
+* Edit the settings.py file suitably where parameters like master_hostname, master_rsync_password etc are defined.
+* Now copy the repository to each of the nodes (both master and slaves) at any location.
+
+Proceed to next steps.
+
 
 ### Running the master node REST API
 
@@ -41,6 +50,9 @@ On each of the slave nodes start the slave node API.
 
     python slave.py
 
+Slave Node API runs on port 7000 by default. There should be no need to manually
+interact with the slave node API. It is primarily used by the master for inter
+system communication.
 
 ### Adding a slave node
 
@@ -249,3 +261,4 @@ by providing the name of a project. The API endpoint for this is:
     /syncup/?project=<your_project_name>
 
 Note: For explicit syncing the project must already be added via the API previously.
+
