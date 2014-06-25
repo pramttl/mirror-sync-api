@@ -26,7 +26,7 @@ def rsync_call(
     # print 'rsync_options:', rsync_options  #XXX: Remove this after testing
 
     rsync_args_str = ' '.join(rsync_options)
-    cmd = 'rsync ' + rsync_args_str + ' ' + full_source + ' ' + dest
+    cmd = 'rsync %s %s %s' % (rsync_args_str, full_source, dest)
     rsync_child_process = subprocess.Popen(cmd,
                                            shell=True,
                                            stdin=subprocess.PIPE,
@@ -58,7 +58,7 @@ def rsync_call_nonblocking(
     # print 'rsync_options:', rsync_options
 
     rsync_args_str = ' '.join(rsync_options)
-    cmd = 'rsync ' + rsync_args_str + ' ' + full_source + ' ' + dest
+    cmd = 'rsync %s %s %s' % (rsync_args_str, full_source, dest)
     rsync_child_process = subprocess.Popen(cmd,
                                            shell=True,
                                            stdin=subprocess.PIPE,
@@ -83,7 +83,7 @@ def rsync_progress_call(
 
     # A dry run call helps determine the total number of files used for tracking
     # percentage of sync during the real call.
-    cmd = 'rsync -avH --delete --stats --dry-run ' + full_source + ' ' + dest
+    cmd = 'rsync -avH --delete --stats --dry-run %s %s' % (full_source, dest,)
     proc = subprocess.Popen(cmd,
       shell=True,
       stdin=subprocess.PIPE,
@@ -94,7 +94,7 @@ def rsync_progress_call(
     mn = re.findall(r'Number of files: (\d+)', nfiles_str)
     total_files = int(mn[0])
      
-    cmd = 'rsync -avH --delete --progress ' + full_source + ' ' + dest 
+    cmd = 'rsync -avH --delete --progress %s %s' % (full_source, dest,)
     rsync_process = subprocess.Popen(cmd,
                                      shell=True,
                                      stdin=subprocess.PIPE,

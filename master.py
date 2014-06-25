@@ -63,10 +63,10 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password
     Note: The same rsync_options are used for upstream-master syncing as for
     the master-slave syncing.
     """
-    full_source = project + '@' + rsync_host + '::' + rsync_module
-    dest = dest + '/' + project
+    full_source = '%s@%s::%s' % (project, rsync_host, rsync_module)
+    dest = '%s/%s' % (dest, project)
 
-    print "Syncing up " + project
+    print('Syncing up %s' % (project,))
 
     # Blocking rsync call
     rsync_call(full_source, dest, password,
@@ -79,7 +79,7 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password
 
     # Tell all ftp hosts to sync from the master
     for node in ftp_hosts:
-        slave_api_url = 'http://' + node.hostname + ':' + node.port + '/sync_from_master/'
+        slave_api_url = 'http://%s:%s/sync_from_master/' % (node.hostname, node.port)
         data = {
          'project': project,
           #"rsync_module": settings.MASTER_RSYNCD_MODULE + '/' + project, # rsync module
@@ -161,7 +161,7 @@ def add_project():
                   'rsync_module': project_obj['rsync_module'],
                   'dest': project_obj['dest'],
                   'password': project_obj['rsync_password'],
-                  'rsync_options': project_obj.get('rsync_options', {}),}
+                  'rsync_options': project_obj.get('rsync_options',{}),}
 
     # Reading the schedule parameters into a separate dictionary
     schedule_kwargs = project_obj['cron_options']
@@ -194,7 +194,7 @@ def list_projects():
         job_kwargs_copy = job.kwargs.copy()
 
         # Add cron parameters of the job along with the other parameters.
-        for key,value in schedule_dict.items():
+        for key, value in schedule_dict.items():
             job_kwargs_copy['cron_options'] = cleaned_schedule_dict
 
         # The copy stores the basic parameters as well as the schedule parameters.
@@ -220,7 +220,7 @@ def remove_project():
             break
 
     return jsonify({'method': 'remove_project', 'success': action_status,
-                    'project': project })
+                    'project': project})
 
 
 @app.route('/syncup/', methods=['GET', ])
@@ -232,7 +232,6 @@ def syncup_project():
 
     if project:
         jobs = sched.get_jobs()
-        action_status = False
         for job in jobs:
             if job.kwargs['project'] == project:
                 break
@@ -240,11 +239,11 @@ def syncup_project():
         rsync_host = job.kwargs['rsync_host']
         rsync_module = job.kwargs['rsync_module']
         project = job.kwargs['project']
-        dest = job.kwargs['dest'] + '/' + project
+        dest = '%s/%s' % (job.kwargs['dest'], project)
         password = job.kwargs['password']
-        rsync_options = project_obj.get('rsync_options')
+        rsync_options = project.get('rsync_options')
 
-        full_source = project + '@' + rsync_host + '::' + rsync_module
+        full_source = '%s@%s::%s' % (project, rsync_host, rsync_module)
         rsync_call_nonblocking(full_source, dest, password,
                                rsync_options.get('basic', []),
                                rsync_options.get('defaults', settings.RSYNC_DEFAULT_OPTIONS),
@@ -286,7 +285,7 @@ def update_project_settings():
             break
 
     return jsonify({'method': 'update_project', 'success': action_status,
-                    'project': updated_name })
+                    'project': updated_name})
 
 
 @app.route('/update_project/schedule/', methods=['POST', ])
@@ -347,11 +346,10 @@ def update_project_schedule():
     sched.add_cron_job(sync_project_from_upstream, kwargs=job.kwargs, **schedule_kwargs)
 
     return jsonify({'method': 'update_project', 'success': action_status,
-                    'project': project })
+                    'project': project})
 
 
 if __name__ == "__main__":
     db.create_all()
     app.debug = True
     app.run(use_reloader=False)
-

@@ -19,12 +19,11 @@ def sync_project_from_upstream():
     project = details['project']
     rsync_password = details['rsync_password']
     rsync_options = details['rsync_options']
-    full_source = settings.SLAVE_USER + '@' + master_host + '::' + \
-                  settings.MASTER_RSYNCD_MODULE + '/' + project
+    full_source = '%s@%s::%s/%s' % (settings.SLAVE_USER, master_host, \
+                                  settings.MASTER_RSYNCD_MODULE, project)
 
-    print 'full_source', full_source
-
-    print "Slave syncing up " + project
+    print('Full_source: %s' % (full_source,))
+    print('Slave syncing up %s' % (project,))
 
     dest = settings.SLAVE_PUBLIC_DIR
 
