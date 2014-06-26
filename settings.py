@@ -1,6 +1,6 @@
 import os
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + PROJECT_ROOT + '/master.db'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + PROJECT_ROOT + '/msync.db'
 
 ####### Master node settings #######
 MASTER_HOSTNAME ='localhost'
@@ -12,6 +12,9 @@ SLAVE_PUBLIC_DIR = '/home/pranjal/projects/osl/slave_node/public_html/'
 SLAVE_USER = 'pranjal'
 SLAVE_PORT = 7000
 
+ROOT_USER = 'root'
+ROOT_PASS = 'root'
+SECRET_KEY = 'secret'
 
 ####### RSYNC OPTIONS ##########
 
