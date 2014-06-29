@@ -1,4 +1,5 @@
-# These models are used only by the master node API
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 
 from apscheduler.scheduler import Scheduler
 from apscheduler.triggers import CronTrigger
@@ -8,9 +9,10 @@ from flask_sqlalchemy import SQLAlchemy
 
 import requests
 import simplejson as json
-from sync_utilities import rsync_call, rsync_call_nonblocking
+from utils.syncing import rsync_call, rsync_call_nonblocking
 
 app = Flask(__name__)
+app.config.from_object('settings')
 db = SQLAlchemy(app)
 
 LOG_FILE = "logfile.txt"
@@ -105,8 +107,8 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password
     # Blocking rsync call
     rsync_call(full_source, dest, password,
                rsync_options.get('basic', []),
-               rsync_options.get('defaults', settings.RSYNC_DEFAULT_OPTIONS),
-               rsync_options.get('delete', settings.RSYNC_DELETE_OPTION))
+               rsync_options.get('defaults', app.config['RSYNC_DEFAULT_OPTIONS']),
+               rsync_options.get('delete', app.config['RSYNC_DELETE_OPTION']))
 
     ftp_hosts = SlaveNode.query.all()
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
@@ -117,8 +119,8 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password
         data = {
          'project': project,
           #"rsync_module": settings.MASTER_RSYNCD_MODULE + '/' + project, # rsync module
-         'rsync_host': settings.MASTER_HOSTNAME,
-         'rsync_password': settings.MASTER_RSYNCD_PASSWORD,
+         'rsync_host': app.config['MASTER_HOSTNAME'],
+         'rsync_password': app.config['MASTER_RSYNCD_PASSWORD'],
          'rsync_options' : rsync_options,
          'slave_id': node.id,
           }
@@ -130,6 +132,11 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password
 
 
 ######################### VIEWS: AUTH X 2  ##############################
+@app.route('/test', methods = ['GET'])
+def test_function():
+    return jsonify({ 'success': True })
+
+
 @app.route('/users', methods = ['POST'])
 def new_user():
     username = request.json.get('username')
@@ -301,8 +308,8 @@ def syncup_project():
         full_source = '%s@%s::%s' % (project, rsync_host, rsync_module)
         rsync_call_nonblocking(full_source, dest, password,
                                rsync_options.get('basic', []),
-                               rsync_options.get('defaults', settings.RSYNC_DEFAULT_OPTIONS),
-                               rsync_options.get('delete', settings.RSYNC_DELETE_OPTION))
+                               rsync_options.get('defaults', app.config['RSYNC_DEFAULT_OPTIONS']),
+                               rsync_options.get('delete', app.config['RSYNC_DELETE_OPTION']))
 
         return jsonify({'method': 'syncup_project', 'success': True,
                         'project': project, 'note': 'sync initiated'})
@@ -423,4 +430,4 @@ def slave_rsync_complete():
 if __name__ == "__main__":
     db.create_all()
     app.debug = True
-    app.run(port=settings.MASTER_PORT, use_reloader=False)
+    app.run(port=app.config['MASTER_PORT'], use_reloader=False)

@@ -25,6 +25,3 @@ RSYNC_DEFAULT_OPTIONS = ['-avH',]
 
 # This rsync delete option is used in all cases unless overrided.
 RSYNC_DELETE_OPTION = '--delete'
-
-
-DEBUG = True

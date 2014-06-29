@@ -33,7 +33,7 @@ Proceed to next steps.
 
     virtualenv venv
     pip install -r requirements.txt
-    python master.py
+    python master/master.py
 
     # This starts the local api server (in development mode)
 
@@ -48,7 +48,7 @@ Master node API runs on port 5000 by default.
 
 On each of the slave nodes start the slave node API.
 
-    python slave.py
+    python slave/slave.py
 
 Slave Node API runs on port 7000 by default. There should be no need to manually
 interact with the slave node API. It is primarily used by the master for inter

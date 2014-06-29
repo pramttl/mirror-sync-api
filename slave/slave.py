@@ -1,8 +1,11 @@
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
+
 from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 import requests
-from sync_utilities import rsync_call, rsync_call_nonblocking
+from utils.syncing import rsync_call, rsync_call_nonblocking
 import settings
 import simplejson as json
 
