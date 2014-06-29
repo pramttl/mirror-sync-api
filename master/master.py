@@ -53,7 +53,9 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password
                rsync_options.get('defaults', app.config['RSYNC_DEFAULT_OPTIONS']),
                rsync_options.get('delete', app.config['RSYNC_DELETE_OPTION']))
 
-    ftp_hosts = SlaveNode.query.all()
+    with app.app_context():
+        ftp_hosts = SlaveNode.query.all()
+
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
     # Tell all ftp hosts to sync from the master
