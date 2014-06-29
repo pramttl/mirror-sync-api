@@ -1,6 +1,8 @@
 import os
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + PROJECT_ROOT + '/msync.db'
+
+MASTER_API_DIR = os.path.join(PROJECT_ROOT, 'master/')
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + MASTER_API_DIR + '/master.db'
 
 ####### Master node settings #######
 MASTER_HOSTNAME ='localhost'
@@ -23,3 +25,6 @@ RSYNC_DEFAULT_OPTIONS = ['-avH',]
 
 # This rsync delete option is used in all cases unless overrided.
 RSYNC_DELETE_OPTION = '--delete'
+
+
+DEBUG = True

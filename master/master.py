@@ -7,12 +7,10 @@ from flask import Flask, request, jsonify, url_for, abort
 from flask_sqlalchemy import SQLAlchemy
 
 import requests
-import settings
 import simplejson as json
 from sync_utilities import rsync_call, rsync_call_nonblocking
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = settings.SQLALCHEMY_DATABASE_URI
 db = SQLAlchemy(app)
 
 LOG_FILE = "logfile.txt"
