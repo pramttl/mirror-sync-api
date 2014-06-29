@@ -3,6 +3,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 
 from flask import Flask, request, jsonify
 app = Flask(__name__)
+app.config.from_object('settings')
 
 import requests
 from utils.syncing import rsync_call, rsync_call_nonblocking
@@ -10,8 +11,8 @@ import settings
 import simplejson as json
 
 # Every slave api instance can have only one master host at a time
-master_hostname = settings.MASTER_HOSTNAME
-master_port = settings.MASTER_PORT
+master_hostname = app.config['MASTER_HOSTNAME']
+master_port = app.config['MASTER_PORT']
 
 ####################### UTILITY FUNCTIONS ########################
 
@@ -44,19 +45,19 @@ def sync_project_from_upstream():
     rsync_password = details['rsync_password']
     rsync_options = details['rsync_options']
     slave_id = details['slave_id']
-    full_source = '%s@%s::%s/%s' % (settings.SLAVE_USER, master_hostname, \
-                                  settings.MASTER_RSYNCD_MODULE, project)
+    full_source = '%s@%s::%s/%s' % (app.config['SLAVE_USER'], master_hostname, \
+                                  app.config['MASTER_RSYNCD_MODULE'], project)
 
     print('Full_source: %s' % (full_source,))
     print('Slave syncing up %s' % (project,))
 
-    dest = settings.SLAVE_PUBLIC_DIR
+    dest = app.config['SLAVE_PUBLIC_DIR']
 
     # Pull the data from the master node via rsync
     rsync_call_nonblocking(full_source, dest, rsync_password,
                            rsync_options.get('basic', []),
-                           rsync_options.get('defaults', settings.RSYNC_DEFAULT_OPTIONS),
-                           rsync_options.get('delete', settings.RSYNC_DELETE_OPTION))
+                           rsync_options.get('defaults', app.config['RSYNC_DEFAULT_OPTIONS']),
+                           rsync_options.get('delete', app.config['RSYNC_DELETE_OPTION']))
 
     # As soon as rsync completes we could hit another endpoint on the master
     # node to inform it that *so and so* slave node has completed rsync.
@@ -68,4 +69,4 @@ def sync_project_from_upstream():
 if __name__ == "__main__":
     app.debug = True
     #autoregister_to_master()
-    app.run(port=settings.SLAVE_PORT, use_reloader=False)
+    app.run(port=app.config['SLAVE_PORT'], use_reloader=False)

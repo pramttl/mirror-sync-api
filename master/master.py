@@ -371,6 +371,7 @@ def slave_rsync_complete():
 
 
 if __name__ == "__main__":
-    db.create_all(app=app)
+    with app.app_context():
+        db.create_all(app=app)
     app.debug = True
     app.run(port=app.config['MASTER_PORT'], use_reloader=False)
