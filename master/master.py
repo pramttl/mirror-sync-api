@@ -375,5 +375,11 @@ def slave_rsync_complete():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all(app=app)
+        # Create root user if it does not exist.
+        root_user = User.query.filter_by(username=app.config['ROOT_USER']).first()
+        if not root_user:
+            root_user = User(app.config['ROOT_USER'], app.config['ROOT_PASS'])
+            db.session.add(root_user)
+            db.session.commit()
     app.debug = True
     app.run(port=app.config['MASTER_PORT'], use_reloader=False)
