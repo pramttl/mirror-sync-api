@@ -77,26 +77,51 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password
 
 
 ######################### VIEWS: AUTH X 2  ##############################
+from flask import session, url_for, g
+from flask.ext.httpauth import HTTPBasicAuth
+auth = HTTPBasicAuth()
+
 @app.route('/test', methods = ['GET'])
 def test_function():
     return jsonify({ 'success': True })
 
 
-@app.route('/users', methods = ['POST'])
+@auth.login_required
+@app.route('/create_api_user/', methods = ['POST',])
 def new_user():
+    """
+    Only root users can create new users.
+    """
     username = request.json.get('username')
     password = request.json.get('password')
-    if username is None or password is None:
-        abort(400) # missing arguments
-    if User.query.filter_by(username = username).first() is not None:
-        abort(400) # existing user
-    user = User(username = username)
-    user.hash_password(password)
+    # Exists already
+    if User.query.filter_by(username=username).first():
+        abort(400)
+    user = User(username, password)
     db.session.add(user)
     db.session.commit()
-    return jsonify({ 'username': user.username }), 201, \
-                   {'Location': url_for('get_user', id = user.id, _external = True)}
+    return jsonify({ 'username': user.username })
 
+
+@auth.login_required
+@app.route('/list_users/', methods = ['GET',])
+def list_users():
+    users = User.query.all()
+    users = [user.username for user in users]
+    return json.dumps(users)
+
+
+@auth.verify_password
+def verify_password(username_or_token, password):
+    # first try to authenticate by token
+    user = User.verify_auth_token(username_or_token)
+    if not user:
+        # try to authenticate with username/password
+        user = User.query.filter_by(username = username_or_token).first()
+        if not user or not user.verify_password(password):
+            return False
+    g.user = user
+    return True
 
 ######################### VIEWS: API ENDPOINTS ##########################
 @app.route('/add_slave/', methods=['POST', ])

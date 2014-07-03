@@ -1,5 +1,6 @@
 APScheduler==2.1.2
 Flask==0.10.1
+Flask-HTTPAuth==2.2.1
 Flask-SQLAlchemy==1.0
 Jinja2==2.7.3
 MarkupSafe==0.23

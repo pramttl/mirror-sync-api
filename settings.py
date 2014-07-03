@@ -2,7 +2,7 @@ import os
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
 
 MASTER_API_DIR = os.path.join(PROJECT_ROOT, 'master/')
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + MASTER_API_DIR + '/master.db'
+SQLALCHEMY_DATABASE_URI = 'sqlite:///' + MASTER_API_DIR + 'master.db'
 
 ####### Master node settings #######
 MASTER_HOSTNAME ='localhost'
