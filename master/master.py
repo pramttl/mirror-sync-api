@@ -5,7 +5,7 @@ from apscheduler.scheduler import Scheduler
 from apscheduler.triggers import CronTrigger
 
 from flask import Flask, request, jsonify, url_for, abort
-from database import db
+from models import db
 
 app = Flask(__name__)
 app.config.from_object('settings')
