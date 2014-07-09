@@ -5,9 +5,6 @@ from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, Signatur
 db = SQLAlchemy()
 
 ############################  MODELS  #############################
-from werkzeug import generate_password_hash, check_password_hash
-from itsdangerous import TimedJSONWebSignatureSerializer as Serializer, SignatureExpired, BadSignature
-
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key = True)
