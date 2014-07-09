@@ -102,14 +102,17 @@ def allowed_roles(*roles):
     """
     One user can only have one role. See User model.
     Two roles possible: 'root', 'upstreamuser'
-    Usage example: @required_roles(['root', 'upstreamuser',])
+    Usage example: @required_roles('root', 'upstreamuser',)
     """
     def wrapper(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
-            print g.user.role
-            if g.user.role not in roles:
-                return error_response()
+            username = auth.username()
+            print username
+            user = User.query.filter_by(username=username).first()
+            print roles
+            if user.role not in roles:
+                return "You are not allowed to access this resource"
             return f(*args, **kwargs)
         return wrapped
     return wrapper
@@ -118,10 +121,9 @@ def allowed_roles(*roles):
 ######################### VIEWS: AUTH X 2  ##############################
 
 @app.route('/test/', methods = ['GET'])
-@allowed_roles(['root',])
+@allowed_roles('root',)
 @auth.login_required
 def test_function():
-    print g.user
     return jsonify({ 'success': True })
 
 
