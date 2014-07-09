@@ -4,16 +4,20 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 from apscheduler.scheduler import Scheduler
 from apscheduler.triggers import CronTrigger
 
-from flask import Flask, request, jsonify, url_for, abort
+from flask import Flask, request, session, jsonify, url_for, g, abort
+from flask.ext.httpauth import HTTPBasicAuth
+#from flask.ext.login import current_user
 from models import db
 
 app = Flask(__name__)
 app.config.from_object('settings')
 db.init_app(app)
+auth = HTTPBasicAuth()
 
 import requests
 import simplejson as json
 from utils.syncing import rsync_call, rsync_call_nonblocking
+
 LOG_FILE = "logfile.txt"
 import logging
 
@@ -76,18 +80,53 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password
         # Analyze respone
 
 
-######################### VIEWS: AUTH X 2  ##############################
-from flask import session, url_for, g
-from flask.ext.httpauth import HTTPBasicAuth
-auth = HTTPBasicAuth()
+@auth.verify_password
+def verify_password(username_or_token, password):
+    """
+    Function useful for authentication.
+    Credits: http://blog.miguelgrinberg.com/post/restful-authentication-with-flask
+    """
+    # first try to authenticate by token
+    user = User.verify_auth_token(username_or_token)
+    if not user:
+        # try to authenticate with username/password
+        user = User.query.filter_by(username = username_or_token).first()
+        if not user or not user.verify_password(password):
+            return False
+    g.user = user
+    return True
 
-@app.route('/test', methods = ['GET'])
+
+from functools import wraps
+def allowed_roles(*roles):
+    """
+    One user can only have one role. See User model.
+    Two roles possible: 'root', 'upstreamuser'
+    Usage example: @required_roles(['root', 'upstreamuser',])
+    """
+    def wrapper(f):
+        @wraps(f)
+        def wrapped(*args, **kwargs):
+            print g.user.role
+            if g.user.role not in roles:
+                return error_response()
+            return f(*args, **kwargs)
+        return wrapped
+    return wrapper
+
+
+######################### VIEWS: AUTH X 2  ##############################
+
+@app.route('/test/', methods = ['GET'])
+@allowed_roles(['root',])
+@auth.login_required
 def test_function():
+    print g.user
     return jsonify({ 'success': True })
 
 
-@auth.login_required
 @app.route('/create_api_user/', methods = ['POST',])
+@auth.login_required
 def new_user():
     """
     Only root users can create new users.
@@ -103,25 +142,13 @@ def new_user():
     return jsonify({ 'username': user.username })
 
 
-@auth.login_required
 @app.route('/list_users/', methods = ['GET',])
+@auth.login_required
 def list_users():
     users = User.query.all()
-    users = [user.username for user in users]
+    users = [{'username': user.username , 'role': user.role} for user in users]
     return json.dumps(users)
 
-
-@auth.verify_password
-def verify_password(username_or_token, password):
-    # first try to authenticate by token
-    user = User.verify_auth_token(username_or_token)
-    if not user:
-        # try to authenticate with username/password
-        user = User.query.filter_by(username = username_or_token).first()
-        if not user or not user.verify_password(password):
-            return False
-    g.user = user
-    return True
 
 ######################### VIEWS: API ENDPOINTS ##########################
 @app.route('/add_slave/', methods=['POST', ])
@@ -403,7 +430,7 @@ if __name__ == "__main__":
         # Create root user if it does not exist.
         root_user = User.query.filter_by(username=app.config['ROOT_USER']).first()
         if not root_user:
-            root_user = User(app.config['ROOT_USER'], app.config['ROOT_PASS'])
+            root_user = User(app.config['ROOT_USER'], app.config['ROOT_PASS'], 'root')
             db.session.add(root_user)
             db.session.commit()
     app.debug = True
