@@ -123,7 +123,8 @@ The parameter names are self-explanatory.
    also be rsync_module + relative path from the module on the host machine.
 * `dest`: Destination (Path on the master node where the contents from source
    folder are synced to)
-* `start_date` in posix format Eg: "2014-03-10 09:30"
+* `start_date` Yes, this is the effective time syncing starts (start time included). If this parameter is not provided syncing is in effect as soon as  project is added. The backend uses fuzzy string parsing to map string to a correct datetime object. Unix date format: Eg. "Fri Jul 11 03:08:57 IST 2014" is perfect as it includes all required info to generate corresponding python datetime object. Even something like "2014-03-10 09:30" is accepable though default timezone is set as UTC as timezone is not explicitly provided.
+
 * `rsync_options`: are the extra rsync args that are provided immediately after
    the rsync command in the standard command line execution. In this API the
    `rsync_options` are divied into 3 parts (that should not contain common

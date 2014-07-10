@@ -1,8 +1,12 @@
 import os, sys
 sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 
-from apscheduler.scheduler import Scheduler
-from apscheduler.triggers import CronTrigger
+from pytz import utc
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
+from apscheduler.executors.pool import ProcessPoolExecutor
+from dateutil.parser import parse
 
 from flask import Flask, request, session, jsonify, url_for, g, abort
 from flask.ext.httpauth import HTTPBasicAuth
@@ -24,13 +28,24 @@ import logging
 ##################### SCHEDULER STARTUP #########################
 # Configuring a persistent job store and instantiating scheduler
 # Scheduler starts along with the app (just before)
-config = {
-    'apscheduler.jobstores.file.class': 'apscheduler.jobstores.shelve_store:ShelveJobStore',
-    'apscheduler.jobstores.file.path': 'scheduledjobs.db'
+
+jobstores = {
+    'default': SQLAlchemyJobStore(url='sqlite:///jobs.sqlite')
 }
 
-sched = Scheduler(config)
-sched.start()
+executors = {
+    'default': {'type': 'threadpool', 'max_workers': 20},
+    'processpool': ProcessPoolExecutor(max_workers=5)
+}
+
+job_defaults = {
+    'coalesce': False,
+    'max_instances': 3
+}
+
+scheduler = BackgroundScheduler()
+scheduler.configure(jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone=utc)
+scheduler.start()
 
 
 ############################  MODELS  #############################
@@ -227,14 +242,19 @@ def add_project():
     # Reading the schedule parameters into a separate dictionary
     schedule_kwargs = project_obj['cron_options']
 
+    # Fuzzy parsing of the schedule time, to accomodate a wide variety of user provided formats.
+    # Unix date format is acceptable: Fri Jul 11 03:07:30 IST 2014
+    schedule_kwargs['start_date'] = parse(schedule_kwargs['start_date'], fuzzy=True)
+
     #Todo: Might need a check to make sure all the sub parameters in the cron
     # parameter are acceptable ie. belong to ['start_date', 'minute', 'hour, ...]
 
     logging.basicConfig()
 
     # Add the job to the already running scheduler
-    sched.add_cron_job(sync_project_from_upstream, kwargs=job_kwargs,
-                       **schedule_kwargs)
+    print schedule_kwargs
+    ct = CronTrigger(**schedule_kwargs)
+    scheduler.add_job(func=sync_project_from_upstream, trigger=ct, kwargs=job_kwargs)
 
     return jsonify({'method': 'add_project', 'success': True, 'project': project })
 
@@ -244,7 +264,7 @@ def list_projects():
     """
     List all the upstream projects scheduled for syncing.
     """
-    jobs = sched.get_jobs()
+    jobs = scheduler.get_jobs()
     projects = []
     for job in jobs:
 
@@ -272,12 +292,12 @@ def remove_project():
     project_obj = request.json
     project = project_obj['project']
 
-    jobs = sched.get_jobs()
+    jobs = scheduler.get_jobs()
     action_status = False
     for job in jobs:
         if job.kwargs['project'] == project:
             action_status = True
-            sched.unschedule_job(job)
+            scheduler.unschedule_job(job)
             break
 
     return jsonify({'method': 'remove_project', 'success': action_status,
@@ -292,7 +312,7 @@ def syncup_project():
     project = request.args.get('project')
 
     if project:
-        jobs = sched.get_jobs()
+        jobs = scheduler.get_jobs()
         for job in jobs:
             if job.kwargs['project'] == project:
                 break
@@ -334,7 +354,7 @@ def update_project_settings():
     updated_name = project_obj.get('new_name') or project_obj["project"]
 
     # Finding the earlier job and removing it.
-    jobs = sched.get_jobs()
+    jobs = scheduler.get_jobs()
     action_status = False
     for job in jobs:
         if job.kwargs['project'] == project_obj["project"]:
@@ -367,11 +387,11 @@ def update_project_schedule():
     project = project_obj["project"]
 
     # Finding the earlier job and removing it.
-    jobs = sched.get_jobs()
+    jobs = scheduler.get_jobs()
     action_status = False
     for job in jobs:
         if job.kwargs['project'] == project_obj["project"]:
-            sched.unschedule_job(job)
+            scheduler.unschedule_job(job)
             break
 
     print job
@@ -404,7 +424,8 @@ def update_project_schedule():
     logging.basicConfig()
 
     # Add the job to the already running scheduler
-    sched.add_cron_job(sync_project_from_upstream, kwargs=job.kwargs, **schedule_kwargs)
+    ct = CronTrigger(**schedule_kwargs)
+    scheduler.add_job(func=sync_project_from_upstream, trigger=ct, kwargs=job.kwargs)
 
     return jsonify({'method': 'update_project', 'success': action_status,
                     'project': project})
