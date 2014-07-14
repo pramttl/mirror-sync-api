@@ -381,19 +381,8 @@ def update_project_schedule():
     """
     project_obj = request.json
 
-    # If there is any new project name then use it else use the old project name.
-    project = project_obj["project"]
-
-    # Finding the earlier job and removing it.
-    jobs = scheduler.get_jobs()
-    action_status = False
-    for job in jobs:
-        if job.kwargs['project'] == project_obj["project"]:
-            scheduler.remove_job(job)
-            break
-
-    print job
-    # The variable `job` still holds the basic parameters of the job being updated.
+    job_id = project_obj["id"]
+    job = scheduler.get_job(job_id)
 
     # Reading the schedule parameters into a separate dictionary
     schedule_kwargs = {}
@@ -401,6 +390,7 @@ def update_project_schedule():
     # This is to make sure that default APScheduler values are not overwritten by None
     if project_obj.get('start_date'):
         schedule_kwargs['start_date'] = project_obj.get('start_date')
+        schedule_kwargs['start_date'] = parse(schedule_kwargs['start_date'], fuzzy=True)
 
     if project_obj.get('month'):
         schedule_kwargs['month'] = project_obj.get('month')
@@ -417,13 +407,11 @@ def update_project_schedule():
     if project_obj.get('day_of_week'):
         schedule_kwargs['day_of_week'] = project_obj.get('day_of_week')
 
+    ct = CronTrigger(**schedule_kwargs)
+    job.reschedule(trigger=ct)
     action_status = True
 
     logging.basicConfig()
-
-    # Add the job to the already running scheduler
-    ct = CronTrigger(**schedule_kwargs)
-    scheduler.add_job(func=sync_project_from_upstream, trigger=ct, kwargs=job.kwargs)
 
     return jsonify({'method': 'update_project', 'success': action_status,
                     'project': project})

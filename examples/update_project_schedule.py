@@ -6,7 +6,7 @@ headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
 # To  update multiple parameters at once.
 data = {
- "project": "ubuntu",
+ "id": "ubuntu",
  "minute": "*/5",
  "start_date": "2014-05-7 18:00",                    # $ date "+%Y-%m-%d %H:%M"
 }
