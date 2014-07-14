@@ -53,7 +53,7 @@ scheduler.start()
 from models import User, SlaveNode
 
 ####################### UTILITY FUNCTIONS ########################
-def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password,
+def sync_project_from_upstream(project, rsync_host, rsync_module, dest, rsync_password,
                                rsync_options):
     """
     Sync's project from upstream and after upstream-master syncing is over,
@@ -68,7 +68,7 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, password
     print('Syncing up %s' % (project,))
 
     # Blocking rsync call
-    rsync_call(full_source, dest, password,
+    rsync_call(full_source, dest, rsync_password,
                rsync_options.get('basic', []),
                rsync_options.get('defaults', app.config['RSYNC_DEFAULT_OPTIONS']),
                rsync_options.get('delete', app.config['RSYNC_DELETE_OPTION']))
@@ -238,8 +238,8 @@ def add_project():
                   'rsync_host': project_obj['rsync_host'],
                   'rsync_module': project_obj['rsync_module'],
                   'dest': project_obj['dest'],
-                  'password': project_obj['rsync_password'],
-                  'rsync_options': project_obj.get('rsync_options',{}),}
+                  'rsync_password': project_obj['rsync_password'],
+                  'rsync_options': project_obj.get('rsync_options', {}),}
 
     # Reading the schedule parameters into a separate dictionary
     schedule_kwargs = project_obj['cron_options']
@@ -300,8 +300,7 @@ def remove_project():
 
     scheduler.remove_job(job_id)
 
-    return jsonify({'method': 'remove_project', 'success': True,
-                    'id': job_id})
+    return jsonify({'method': 'remove_project', 'success': True, 'id': job_id})
 
 
 @app.route('/syncup/', methods=['GET', ])
@@ -351,22 +350,21 @@ def update_project_settings():
     project_obj = request.json
 
     # If there is any new project name then use it else use the old project name.
-    updated_name = project_obj.get('new_name') or project_obj["project"]
+    job_id = project_obj['id']
 
-    # Finding the earlier job and removing it.
+    # Finding the job in context and updating it.
     jobs = scheduler.get_jobs()
-    action_status = False
-    for job in jobs:
-        if job.kwargs['project'] == project_obj["project"]:
-            job.kwargs['project'] = updated_name
-            job.kwargs['rsync_host'] = project_obj.get('rsync_host') or job.kwargs['rsync_host']
-            job.kwargs['rsync_module'] = project_obj.get('rsync_module') or job.kwargs['rsync_module']
-            job.kwargs['dest'] = project_obj.get('dest') or job.kwargs['dest']
-            job.kwargs['password'] = project_obj.get('rsync_password') or job.kwargs['rsync_password']
-            break
+    job_kwargs = {}
+    job = scheduler.get_job(job_id)
+    job_kwargs['project'] = project_obj.get('project') or job.kwargs['project']
+    job_kwargs['rsync_host'] = project_obj.get('rsync_host') or job.kwargs['rsync_host']
+    job_kwargs['rsync_module'] = project_obj.get('rsync_module') or job.kwargs['rsync_module']
+    job_kwargs['dest'] = project_obj.get('dest') or job.kwargs['dest']
+    job_kwargs['rsync_password'] = project_obj.get('rsync_password') or job.kwargs['rsync_password']
+    job_kwargs['rsync_options'] = project_obj.get('rsync_options') or job.kwargs['rsync_options']
+    job.modify(kwargs=job_kwargs)
 
-    return jsonify({'method': 'update_project', 'success': action_status,
-                    'project': updated_name})
+    return jsonify({'method': 'update_project', 'success': True, 'id': job.id})
 
 
 @app.route('/update_project/schedule/', methods=['POST', ])

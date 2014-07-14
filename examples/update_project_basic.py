@@ -7,8 +7,8 @@ headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 # To  update multiple parameters at once, except schedule parameters.
 # Omit the parameters that you do not want to change.
 data = {
- "project": "ubuntu",
- "new_name": "fedora",
+ "id": "ubuntu",
+ "project": "fedora",
  "rsync_module": "new_module_name",                         # rsync module
  "rsync_host": "xlstosql.brightants.com",
  "dest": "/home/pranjal/projects/osl/arrays/1", # "/data/ftp/.1/",

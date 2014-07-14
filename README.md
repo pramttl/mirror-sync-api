@@ -209,7 +209,7 @@ case depending on how many you have added.
 Projects can be removed from the API records, based on their id. To remove a
  project send a `POST` request to of content-type `application/json` type to:
 
-    http://127.0.0.1:5000/add_project/
+    http://127.0.0.1:5000/remove_project/
 
 Example:
 
@@ -230,14 +230,19 @@ Send a JSON POST request to `http://localhost:5000/update_project/basic/`.
 Example json payload:
 
         data = {
-         "project": "ubuntu",
-         "new_name": "fedora",
-         "rsync_module": "new_module_name",                         # rsync module
-         "rsync_host": "xlstosql.brightants.com",
-         "dest": "/home/pranjal/projects/osl/syncedup_temp/", # "/data/ftp/.1/",
+          "id": "ubuntu",                                      # Complusary parameter
+          "project": "fedora",
+          "rsync_module": "new_module_name",                   # rsync module
+          "rsync_host": "<new_ip_or_hostname>",
+          "dest": "/home/pranjal/projects/osl/syncedup_temp/", # "/data/ftp/.1/",
         }
 
-Make sure content-type of the request is `application/json`.
+`id` paramter is compulsary.
+The `project` parameter is optional. If this parameter is update the new id will also change and
+automatically set as per the name of the project.
+
+    [Note]: Id of the project changes after this operation if a different `project`
+    parameter is provided. Also make sure content-type of the request is `application/json`.
 
 ##### 2. Updating Schedule Settings
 
@@ -245,7 +250,7 @@ Send a POST request to `http://localhost:5000/update_project/schedule/`.
 Example json payload:
 
         data = {
-         "project": "ubuntu",
+         "id": "ubuntu",
          "minute": "*/5",
          "start_date": "2014-05-7 18:00",                    # $ date "+%Y-%m-%d %H:%M"
         }
