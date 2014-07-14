@@ -117,7 +117,8 @@ Example payload:
 
 The parameter names are self-explanatory.
 
-* `project`: Project name
+* `project`: Name of the project.
+* `id` (optional): This is set equal to the name of the project by default or can be set explicitly.
 * `rsync_host`: Hostname or IP address of the rsync source
 * `rsync_module`: Note that this parameter is not just rsync_module name but can
    also be rsync_module + relative path from the module on the host machine.
@@ -205,7 +206,7 @@ case depending on how many you have added.
 
 ### Removing a project
 
-Projects can be removed from the API records, based on their name. To remove a
+Projects can be removed from the API records, based on their id. To remove a
  project send a `POST` request to of content-type `application/json` type to:
 
     http://127.0.0.1:5000/add_project/
@@ -213,7 +214,7 @@ Projects can be removed from the API records, based on their name. To remove a
 Example:
 
         {
-         "project": "fedora",
+         "id": "fedora",
         }
 
 If a project named `fedora` is present in the jobstore it will be removed, otherwise no action will be performed.

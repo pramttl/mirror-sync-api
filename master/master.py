@@ -6,6 +6,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.executors.pool import ProcessPoolExecutor
+from apscheduler.job import Job
 from dateutil.parser import parse
 
 from flask import Flask, request, session, jsonify, url_for, g, abort
@@ -231,6 +232,7 @@ def add_project():
     """
     project_obj = request.json
     project = project_obj["project"]
+    job_id = project_obj.get('id') or project
 
     job_kwargs = {'project': project,
                   'rsync_host': project_obj['rsync_host'],
@@ -254,7 +256,10 @@ def add_project():
     # Add the job to the already running scheduler
     print schedule_kwargs
     ct = CronTrigger(**schedule_kwargs)
-    scheduler.add_job(func=sync_project_from_upstream, trigger=ct, kwargs=job_kwargs)
+    job = scheduler.add_job(func=sync_project_from_upstream, id=job_id, trigger=ct, kwargs=job_kwargs)
+    #job = Job(id=job_id, func=sync_project_from_upstream, scheduler=scheduler, trigger=ct, args=[], kwargs=job_kwargs)
+    print "job_id"
+    print job.id
 
     return jsonify({'method': 'add_project', 'success': True, 'project': project })
 
@@ -278,9 +283,10 @@ def list_projects():
         for key, value in schedule_dict.items():
             job_kwargs_copy['cron_options'] = cleaned_schedule_dict
 
+        job_kwargs_copy['id'] = job.id
+
         # The copy stores the basic parameters as well as the schedule parameters.
         projects.append(job_kwargs_copy)
-    print projects
     return json.dumps(projects)
 
 
@@ -290,18 +296,12 @@ def remove_project():
     Remove an upstream project from the master node.
     """
     project_obj = request.json
-    project = project_obj['project']
+    job_id = project_obj['id']
 
-    jobs = scheduler.get_jobs()
-    action_status = False
-    for job in jobs:
-        if job.kwargs['project'] == project:
-            action_status = True
-            scheduler.unschedule_job(job)
-            break
+    scheduler.remove_job(job_id)
 
-    return jsonify({'method': 'remove_project', 'success': action_status,
-                    'project': project})
+    return jsonify({'method': 'remove_project', 'success': True,
+                    'id': job_id})
 
 
 @app.route('/syncup/', methods=['GET', ])
@@ -391,7 +391,7 @@ def update_project_schedule():
     action_status = False
     for job in jobs:
         if job.kwargs['project'] == project_obj["project"]:
-            scheduler.unschedule_job(job)
+            scheduler.remove_job(job)
             break
 
     print job
