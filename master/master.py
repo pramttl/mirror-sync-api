@@ -124,7 +124,6 @@ def allowed_roles(*roles):
         @wraps(f)
         def wrapped(*args, **kwargs):
             username = auth.username()
-            print username
             user = User.query.filter_by(username=username).first()
             print roles
             if user.role not in roles:
@@ -167,6 +166,14 @@ def list_users():
     users = [{'username': user.username , 'role': user.role} for user in users]
     return json.dumps(users)
 
+
+@app.route('/get_token/', methods = ['GET',])
+@auth.login_required
+def get_token():
+    username = auth.username()
+    user = User.query.filter_by(username=username).first()
+    token = user.generate_auth_token()
+    return json.dumps({'token': token})
 
 ######################### VIEWS: API ENDPOINTS ##########################
 @app.route('/add_slave/', methods=['POST', ])
@@ -344,7 +351,6 @@ def resume_job():
     if project_id:
         job = scheduler.get_job(job_id=project_id)
         job.resume()
-    else:
         return jsonify({'method': 'enable_project', 'success': True,})
     else:
         return jsonify({'method': 'enable_project', 'success': False,
