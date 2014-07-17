@@ -295,6 +295,10 @@ def list_projects():
             job_kwargs_copy['cron_options'] = cleaned_schedule_dict
 
         job_kwargs_copy['id'] = job.id
+        if not job.next_run_time:
+            job_kwargs_copy['enabled'] = False
+        else:
+            job_kwargs_copy['enabled'] = True
 
         # The copy stores the basic parameters as well as the schedule parameters.
         projects.append(job_kwargs_copy)
@@ -308,10 +312,43 @@ def remove_project():
     """
     project_obj = request.json
     job_id = project_obj['id']
-
     scheduler.remove_job(job_id)
 
     return jsonify({'method': 'remove_project', 'success': True, 'id': job_id})
+
+
+@app.route('/disable_project/', methods=['GET', ])
+def pause_job():
+    """
+    Pause syncing for a project.
+    """
+    project_id = request.args.get('id')
+
+    if project_id:
+        job = scheduler.get_job(job_id=project_id)
+        print dir(job)
+        job.pause()
+        return jsonify({'method': 'disable_project', 'success': True,})
+    else:
+        return jsonify({'method': 'disable_project', 'success': False,
+                        'note': 'No project id provided'})
+
+
+@app.route('/enable_project/', methods=['GET', ])
+def resume_job():
+    """
+    Resume syncing for a project.
+    """
+    project_id = request.args.get('id')
+
+    if project_id:
+        job = scheduler.get_job(job_id=project_id)
+        job.resume()
+    else:
+        return jsonify({'method': 'enable_project', 'success': True,})
+    else:
+        return jsonify({'method': 'enable_project', 'success': False,
+                        'note': 'No project id provided'})
 
 
 @app.route('/syncup/', methods=['GET', ])
@@ -338,10 +375,10 @@ def syncup_project():
                                rsync_options['delete'])
 
         return jsonify({'method': 'syncup_project', 'success': True,
-                        'project': project, 'note': 'sync initiated'})
+                        'project_id': projec_id, 'note': 'sync initiated'})
     else:
         return jsonify({'method': 'syncup_project', 'success': False,
-                        'project': project, 'note': 'No project id provided'})
+                        'note': 'No project id provided'})
 
 
 @app.route('/update_project/basic/', methods=['POST', ])

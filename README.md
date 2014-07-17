@@ -188,6 +188,7 @@ Example:
           minute: "*"
         },
         dest: "/home/pranjal/projects/osl/syncedup_temp/",
+        enabled: true
         rsync_options : {
               'basic': [],
               'defaults': ['-avH',],
@@ -203,6 +204,22 @@ Example:
 
 The above list shows one project. There could be several projects listed in your
 case depending on how many you have added.
+
+**enabled** parameter tells whether a project is enabled or disabled.
+
+### Enable/Disable a project
+
+Disabled is synonymous with paused which is denoted by a `false` value of `enabled`
+parameter in [project listing](/list_projects/)
+
+`/enable_project/` or `/disable_project/` endpoints can be used providing `id`
+of project as a GET parameter to enable or disable a project.
+
+Example:
+
+    http://127.0.0.1:5000/disable_project/id=ubuntu
+
+This will pause the syncing for the project whose id=ubuntu.
 
 ### Removing a project
 
