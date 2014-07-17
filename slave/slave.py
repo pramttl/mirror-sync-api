@@ -48,16 +48,17 @@ def sync_project_from_upstream():
     full_source = '%s@%s::%s/%s' % (app.config['SLAVE_USER'], master_hostname, \
                                   app.config['MASTER_RSYNCD_MODULE'], project)
 
-    print('Full_source: %s' % (full_source,))
-    print('Slave syncing up %s' % (project,))
+    print('I am syncing up -%s- using rsync source: %s' % (project, full_source,))
 
     dest = app.config['SLAVE_PUBLIC_DIR']
 
     # Pull the data from the master node via rsync
     rsync_call_nonblocking(full_source, dest, rsync_password,
-                           rsync_options.get('basic', []),
-                           rsync_options.get('defaults', app.config['RSYNC_DEFAULT_OPTIONS']),
-                           rsync_options.get('delete', app.config['RSYNC_DELETE_OPTION']))
+                           rsync_options['basic'],
+                           rsync_options['defaults'],
+                           rsync_options['delete'],)
+
+    print('I have completed syncing of -%s- from master node' % (project,))
 
     # As soon as rsync completes we could hit another endpoint on the master
     # node to inform it that *so and so* slave node has completed rsync.

@@ -12,6 +12,10 @@ data = {
  "rsync_module": "new_module_name",                         # rsync module
  "rsync_host": "xlstosql.brightants.com",
  "dest": "/home/pranjal/projects/osl/arrays/1", # "/data/ftp/.1/",
+ "rsync_options": {
+    'basic': ['-avH'],
+    'defaults': [],
+ }
 }
 
 r = requests.post(url, data=json.dumps(data), headers=headers)

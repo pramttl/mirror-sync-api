@@ -132,10 +132,10 @@ The parameter names are self-explanatory.
    parameters):
 
    * `defaults`: The API sets some rsync flags by default. These can be overrided
-           by setting this list parameter as a blank list or anything as required.
+      by setting this list parameter as a blank list or anything as required.
    * `basic`: Standard list of rsync options.
    * `delete`: There are 7 mutually exclusive delete options in rsync.
-      Since only one of them can be used at a time, this parameter is a list.
+      Since only one of them can be used at a time, this parameter is a string.
 
 Each project can have its own set of rsync options. These arguments mean the same as
 you would find in the [rsync](http://rsync.samba.org/ftp/rsync/rsync.html) man page.
@@ -261,6 +261,8 @@ Example json payload:
 
 
 ### Explicitly initiating a sync
+
+**Warning**: This feature is broken right now
 
 You can even request syncing up of a particular project apart from the scheduled syncing
 by providing the name of a project. The API endpoint for this is:

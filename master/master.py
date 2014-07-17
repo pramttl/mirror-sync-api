@@ -69,9 +69,9 @@ def sync_project_from_upstream(project, rsync_host, rsync_module, dest, rsync_pa
 
     # Blocking rsync call
     rsync_call(full_source, dest, rsync_password,
-               rsync_options.get('basic', []),
-               rsync_options.get('defaults', app.config['RSYNC_DEFAULT_OPTIONS']),
-               rsync_options.get('delete', app.config['RSYNC_DELETE_OPTION']))
+               rsync_options['basic'],
+               rsync_options['defaults'],
+               rsync_options['delete'],)
 
     with app.app_context():
         ftp_hosts = SlaveNode.query.all()
@@ -188,7 +188,7 @@ def add_slave():
         details = 'Added to cluster'
         print('Slave added')
 
-    return jsonify({'method': 'add_slave', 'success': True, 
+    return jsonify({'method': 'add_slave', 'success': True,
                     'hostname': obj['hostname'],
                     'details': details })
 
@@ -239,7 +239,18 @@ def add_project():
                   'rsync_module': project_obj['rsync_module'],
                   'dest': project_obj['dest'],
                   'rsync_password': project_obj['rsync_password'],
-                  'rsync_options': project_obj.get('rsync_options', {}),}
+                  'rsync_options': {}
+                  }
+    rsync_options = project_obj.get('rsync_options')
+
+    if rsync_options:
+        job_kwargs['rsync_options']['basic'] = rsync_options.get('basic', [])
+        job_kwargs['rsync_options']['defaults'] = rsync_options.get('defaults', app.config['RSYNC_DEFAULT_OPTIONS'])
+        job_kwargs['rsync_options']['delete'] = rsync_options.get('delete', app.config['RSYNC_DELETE_OPTION'])
+    else:
+        job_kwargs['rsync_options']['basic'] = []
+        job_kwargs['rsync_options']['defaults'] = app.config['RSYNC_DEFAULT_OPTIONS']
+        job_kwargs['rsync_options']['delete'] = app.config['RSYNC_DELETE_OPTION']
 
     # Reading the schedule parameters into a separate dictionary
     schedule_kwargs = project_obj['cron_options']
@@ -308,32 +319,29 @@ def syncup_project():
     """
     Allows to explicitly initiate syncing for a project.
     """
-    project = request.args.get('project')
+    project_id = request.args.get('id')
 
-    if project:
-        jobs = scheduler.get_jobs()
-        for job in jobs:
-            if job.kwargs['project'] == project:
-                break
+    if project_id:
+        job = scheduler.get_job(job_id=project_id)
 
         rsync_host = job.kwargs['rsync_host']
         rsync_module = job.kwargs['rsync_module']
         project = job.kwargs['project']
         dest = '%s/%s' % (job.kwargs['dest'], project)
-        password = job.kwargs['password']
-        rsync_options = project.get('rsync_options')
+        password = job.kwargs['rsync_password']
+        rsync_options = job.kwargs['rsync_options']
 
         full_source = '%s@%s::%s' % (project, rsync_host, rsync_module)
         rsync_call_nonblocking(full_source, dest, password,
-                               rsync_options.get('basic', []),
-                               rsync_options.get('defaults', app.config['RSYNC_DEFAULT_OPTIONS']),
-                               rsync_options.get('delete', app.config['RSYNC_DELETE_OPTION']))
+                               rsync_options['basic'],
+                               rsync_options['defaults'],
+                               rsync_options['delete'])
 
         return jsonify({'method': 'syncup_project', 'success': True,
                         'project': project, 'note': 'sync initiated'})
     else:
         return jsonify({'method': 'syncup_project', 'success': False,
-                        'project': project, 'note': 'No project name provided'})
+                        'project': project, 'note': 'No project id provided'})
 
 
 @app.route('/update_project/basic/', methods=['POST', ])
@@ -362,6 +370,15 @@ def update_project_settings():
     job_kwargs['dest'] = project_obj.get('dest') or job.kwargs['dest']
     job_kwargs['rsync_password'] = project_obj.get('rsync_password') or job.kwargs['rsync_password']
     job_kwargs['rsync_options'] = project_obj.get('rsync_options') or job.kwargs['rsync_options']
+
+    if not job_kwargs['rsync_options'].get('basic'):
+        job_kwargs['rsync_options']['basic'] = []
+    if not job_kwargs['rsync_options'].get('defaults'):
+        # If 'defaults' option is not present in new rsync_options then use preset defaults.
+        job_kwargs['rsync_options']['defaults'] = app.config['RSYNC_DEFAULT_OPTIONS']
+    if not job_kwargs['rsync_options'].get('delete'):
+        job_kwargs['rsync_options']['delete'] = app.config['RSYNC_DELETE_OPTION']
+
     job.modify(kwargs=job_kwargs)
 
     return jsonify({'method': 'update_project', 'success': True, 'id': job.id})
@@ -414,13 +431,14 @@ def update_project_schedule():
     logging.basicConfig()
 
     return jsonify({'method': 'update_project', 'success': action_status,
-                    'project': project})
+                    'id': job_id})
 
 
 @app.route('/slave_rsync_complete/', methods=['POST', ])
 def slave_rsync_complete():
     """
-    Remove an upstream project from the master node.
+    When a slave complets syncing of a project it informs the master that it
+    has completed syncing.
     """
     details = request.json
     slave_id = details['slave_id']
@@ -428,7 +446,7 @@ def slave_rsync_complete():
     slave_node = SlaveNode.query.filter_by(id=slave_id).first()
 
     #XXX: Register that the slave has synced xyz project to the db.
-    print('%s -synced- %s'%(slave_node.hostname, project))
+    print('SlaveNode *%s* synced *%s*'%(slave_node.hostname, project))
 
     return jsonify({'method': 'slave_rsync_complete', 'success': True})
 
