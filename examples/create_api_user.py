@@ -1,4 +1,5 @@
 import requests
+from requests.auth import HTTPBasicAuth
 import simplejson as json
 
 url = "http://localhost:5000/create_api_user/"
@@ -9,6 +10,6 @@ data = {
  'password': 'iitbhu123'
 }
 
-r = requests.post(url, data=json.dumps(data), headers=headers)
+r = requests.post(url, auth=HTTPBasicAuth('root', 'root'), data=json.dumps(data), headers=headers)
 print r.text
 

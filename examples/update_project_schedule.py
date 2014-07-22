@@ -1,4 +1,5 @@
 import requests
+from requests.auth import HTTPBasicAuth
 import simplejson as json
 
 url = "http://localhost:5000/update_project/schedule/"
@@ -11,5 +12,5 @@ data = {
  "start_date": "2014-05-7 18:00",                    # $ date "+%Y-%m-%d %H:%M"
 }
 
-r = requests.post(url, data=json.dumps(data), headers=headers)
+r = requests.post(url, auth=HTTPBasicAuth('root', 'root'), data=json.dumps(data), headers=headers)
 

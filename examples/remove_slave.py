@@ -1,4 +1,5 @@
 import requests
+from requests.auth import HTTPBasicAuth
 import simplejson as json
 
 url = "http://localhost:5000/remove_slave/"
@@ -8,5 +9,5 @@ data = {
  'hostname': 'localhost',
 }
 
-r = requests.post(url, data=json.dumps(data), headers=headers)
+r = requests.post(url, auth=HTTPBasicAuth('root', 'root'), data=json.dumps(data), headers=headers)
 
