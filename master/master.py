@@ -125,7 +125,6 @@ def allowed_roles(*roles):
         def wrapped(*args, **kwargs):
             username = auth.username()
             user = User.query.filter_by(username=username).first()
-            print roles
             if user.role not in roles:
                 return "You are not allowed to access this resource"
             return f(*args, **kwargs)
@@ -143,10 +142,11 @@ def test_function():
 
 
 @app.route('/create_api_user/', methods = ['POST',])
+@allowed_roles('root',)
 @auth.login_required
 def new_user():
     """
-    Only root users can create new users.
+    Only root users can create new api users.
     """
     username = request.json.get('username')
     password = request.json.get('password')
@@ -160,6 +160,7 @@ def new_user():
 
 
 @app.route('/list_users/', methods = ['GET',])
+@allowed_roles('root',)
 @auth.login_required
 def list_users():
     users = User.query.all()
@@ -170,6 +171,9 @@ def list_users():
 @app.route('/get_token/', methods = ['GET',])
 @auth.login_required
 def get_token():
+    """
+    Any user should be able to get an access token.
+    """
     username = auth.username()
     user = User.query.filter_by(username=username).first()
     token = user.generate_auth_token()
@@ -177,9 +181,12 @@ def get_token():
 
 ######################### VIEWS: API ENDPOINTS ##########################
 @app.route('/add_slave/', methods=['POST', ])
+@allowed_roles('root',)
+@auth.login_required
 def add_slave():
     """
     Add a slave node or ftp host to the the FTP setup.
+    Only root users can add slave nodes to the cluster.
     """
     obj = request.json
     hostname = obj["hostname"]
@@ -201,6 +208,8 @@ def add_slave():
 
 
 @app.route('/list_slaves/', methods=['GET', ])
+@allowed_roles('root',)
+@auth.login_required
 def list_slaves():
     """
     Returns a list of all slave objects in JSON format.
@@ -211,6 +220,8 @@ def list_slaves():
 
 
 @app.route('/remove_slave/', methods=['POST', ])
+@allowed_roles('root',)
+@auth.login_required
 def remove_slave():
     """
     Remove a slave node from the ftp cluster.
@@ -229,6 +240,8 @@ def remove_slave():
 
 
 @app.route('/add_project/', methods=['POST', ])
+@allowed_roles('root',)
+@auth.login_required
 def add_project():
     """
     Schedules an upstream project for syncing (periodic)
@@ -237,6 +250,8 @@ def add_project():
     @rsync_host: IP or hostname of the upstream rsync provider
     @rsync_module: <rsync_module_name>/relative_path_from_there
     """
+    #XXX: Anyone can add a project, but we should also store which user
+    # added what project.
     project_obj = request.json
     project = project_obj["project"]
     job_id = project_obj.get('id') or project
@@ -313,10 +328,14 @@ def list_projects():
 
 
 @app.route('/remove_project/', methods=['POST', ])
+@allowed_roles('root',)
+@auth.login_required
 def remove_project():
     """
     Remove an upstream project from the master node.
     """
+    #XXX: This endpoint should be available for all users, but they should only
+    # be allowed to remove projects they own.
     project_obj = request.json
     job_id = project_obj['id']
     scheduler.remove_job(job_id)
@@ -325,6 +344,8 @@ def remove_project():
 
 
 @app.route('/disable_project/', methods=['GET', ])
+@allowed_roles('root',)
+@auth.login_required
 def pause_job():
     """
     Pause syncing for a project.
@@ -342,6 +363,8 @@ def pause_job():
 
 
 @app.route('/enable_project/', methods=['GET', ])
+@allowed_roles('root',)
+@auth.login_required
 def resume_job():
     """
     Resume syncing for a project.
@@ -388,6 +411,8 @@ def syncup_project():
 
 
 @app.route('/update_project/basic/', methods=['POST', ])
+@allowed_roles('root',)
+@auth.login_required
 def update_project_settings():
     """
     Updating basic settings of a project scheduled for syncing.

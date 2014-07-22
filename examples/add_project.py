@@ -19,4 +19,5 @@ data = {
   }
 
 r = requests.post(url, auth=HTTPBasicAuth('root', 'root'), data=json.dumps(data), headers=headers)
+print r.text
 
