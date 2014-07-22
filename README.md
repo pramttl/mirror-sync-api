@@ -63,6 +63,11 @@ Send a `POST` request to of content-type `application/json` type to:
 
     http://127.0.0.1:5000/add_slave/
 
+The POST request should include username and password as per HttpBasicAuth authorization.
+
+Allowed Roles: `root`
+(This means only root users are allowed to perform this operation)
+
 Example payload:
 
     data = {
@@ -76,12 +81,15 @@ Example payload:
 Just send a `GET` request to `/list_slaves/`
 This will list all the slave nodes added on master.
 
+Allowed Roles: `root`
 
 ### Removing a slave node
 
 Send a `POST` request to of content-type `application/json` type to:
 
     http://127.0.0.1:5000/remove_slave/
+
+(Request should provide username and password using basic http authentication)
 
 Example Payload:
 
@@ -275,6 +283,31 @@ Example json payload:
   [Rule]: The previous schedule parameters will be overwritten by the current schedule parameters.
   You just have to assume that the previous project was not scheduled and apply the correct schedule
   settings while updating.The basic project parameters are not altered.
+
+
+### Adding API Users
+
+Send a POST request to `/create_api_user/`
+
+Example payload:
+
+        data = {
+         'username': 'superman',
+         'password': 'S'
+        }
+
+Allowed Roles: `root`
+
+
+### Fetching access token
+
+**Warning**: Token based authentication might be broken currently.
+
+It is possible for users to fetch access token by,
+
+Sending a GET request to `/get_token/`
+
+Allow Roles: Any (But user should be authenticated)
 
 
 ### Explicitly initiating a sync
