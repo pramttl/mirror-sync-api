@@ -2,6 +2,25 @@ from flask.ext.testing import TestCase
 from flask import Flask
 from master.models import db
 from master import master as app
+from apscheduler.jobstores.memory import MemoryJobStore
+
+##################### TEST SCHEDULER CONFIG #########################
+jobstores = {
+    'default': MemoryJobStore(),
+    # This is different from non-test jobstore in that it is non-persistent.
+}
+
+executors = {
+    'default': {'type': 'threadpool', 'max_workers': 20},
+    'processpool': ProcessPoolExecutor(max_workers=5)
+}
+
+job_defaults = {
+    'coalesce': False,
+    'max_instances': 
+}
+
+scheduler = BackgroundScheduler()
 
 def init_db(app, db):
     with app.app_context():
@@ -13,6 +32,7 @@ def init_db(app, db):
             db.session.add(root_user)
             db.session.commit()
 
+
 class MsyncApiTestCase(TestCase):
 
     def create_app(self):
@@ -22,11 +42,18 @@ class MsyncApiTestCase(TestCase):
         app.config['SECRET_KEY'] = 'secret'
         self.app = app
         self.db = db
+        self.scheduler = scheduler
         return app
 
     def setUp(self):
+        # Initializing test database
         init_db(self.app, self.db)
+
+        # Initializing test scheduler
+        scheduler.configure(jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone=utc)
+        scheduler.start()
 
     def tearDown(self):
         self.db.session.remove()
         self.db.drop_all()
+        del scheduler

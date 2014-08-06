@@ -26,7 +26,7 @@ from utils.syncing import rsync_call, rsync_call_nonblocking
 LOG_FILE = "logfile.txt"
 import logging
 
-##################### SCHEDULER STARTUP #########################
+##################### SCHEDULER CONFIG #########################
 # Configuring a persistent job store and instantiating scheduler
 # Scheduler starts along with the app (just before)
 
@@ -43,6 +43,8 @@ job_defaults = {
     'coalesce': False,
     'max_instances': 3
 }
+
+scheduler = BackgroundScheduler()
 
 ############################  MODELS  #############################
 from models import User, SlaveNode
@@ -524,7 +526,7 @@ if __name__ == "__main__":
             db.session.add(root_user)
             db.session.commit()
 
-    scheduler = BackgroundScheduler()
+    # Apply configuration to scheduler instance.
     scheduler.configure(jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone=utc)
     scheduler.start()
 
