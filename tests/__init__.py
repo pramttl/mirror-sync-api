@@ -3,6 +3,8 @@ from flask import Flask
 from master.models import db
 from master import master as app
 from apscheduler.jobstores.memory import MemoryJobStore
+from apscheduler.executors.pool import ProcessPoolExecutor
+from apscheduler.schedulers.background import BackgroundScheduler
 
 ##################### TEST SCHEDULER CONFIG #########################
 jobstores = {
@@ -17,7 +19,7 @@ executors = {
 
 job_defaults = {
     'coalesce': False,
-    'max_instances': 
+    'max_instances': 3
 }
 
 scheduler = BackgroundScheduler()

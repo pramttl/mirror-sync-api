@@ -21,8 +21,7 @@ class ProjectsTestCase(MsyncApiTestCase):
                                                                 ROOT_PASS))])
         self.headers = [('Authorization', 'Basic '
                          + base64.b64encode((response.json)['token']
-                         + ':' + ROOT_USER)),
-
+                         + ':' + ROOT_USER)),]
 
     def add_test_project(self):
         user = User(self.test_user, self.test_pass)
