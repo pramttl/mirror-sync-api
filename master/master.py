@@ -44,11 +44,6 @@ job_defaults = {
     'max_instances': 3
 }
 
-scheduler = BackgroundScheduler()
-scheduler.configure(jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone=utc)
-scheduler.start()
-
-
 ############################  MODELS  #############################
 from models import User, SlaveNode
 
@@ -528,5 +523,10 @@ if __name__ == "__main__":
             root_user = User(app.config['ROOT_USER'], app.config['ROOT_PASS'], 'root')
             db.session.add(root_user)
             db.session.commit()
+
+    scheduler = BackgroundScheduler()
+    scheduler.configure(jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone=utc)
+    scheduler.start()
+
     app.debug = True
-    app.run(port=app.config['MASTER_PORT'], use_reloader=False)
+    app.run(port=app.config['MASTER_PORT'],)
