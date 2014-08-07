@@ -1,10 +1,12 @@
+import base64
 from flask.ext.testing import TestCase
 from flask import Flask
-from master.models import db
-from master import master as app
+from master.models import db, User, SlaveNode
+from master.master import app
 from apscheduler.jobstores.memory import MemoryJobStore
 from apscheduler.executors.pool import ProcessPoolExecutor
 from apscheduler.schedulers.background import BackgroundScheduler
+from pytz import utc
 
 ##################### TEST SCHEDULER CONFIG #########################
 jobstores = {
@@ -47,6 +49,15 @@ class MsyncApiTestCase(TestCase):
         self.scheduler = scheduler
         return app
 
+    def open_with_auth(self, url, method, username, password):
+        return self.client.open(url,
+            method=method,
+            headers={
+                'Authorization': 'Basic ' + base64.b64encode(username + \
+                ":" + password)
+            }
+        )
+
     def setUp(self):
         # Initializing test database
         init_db(self.app, self.db)
@@ -58,4 +69,4 @@ class MsyncApiTestCase(TestCase):
     def tearDown(self):
         self.db.session.remove()
         self.db.drop_all()
-        del scheduler
+        del self.scheduler

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import unittest
 import base64
 import json
 from . import MsyncApiTestCase
@@ -9,21 +10,27 @@ from master.models import User
 
 class ProjectsTestCase(MsyncApiTestCase):
 
-    def setUp(self):
-        # Login as ROOT_USER prior to all test cases.
-        # ROOT_USER should have access to all API endpoints.
-
-        super(MsyncTestCase, self).setUp()
-        response = self.client.get(url_for('list_projects'),
-                                   headers=[('Authorization', 'Basic '
-                                             + base64.b64encode(ROOT_USER +
-                                                                ':' +
-                                                                ROOT_PASS))])
-        self.headers = [('Authorization', 'Basic '
-                         + base64.b64encode((response.json)['token']
-                         + ':' + ROOT_USER)),]
-
     def add_test_project(self):
-        user = User(self.test_user, self.test_pass)
-        self.db.session.add(user)
-        self.db.session.commit()
+        print("Todo: Add project to scheduler as well as db")
+        # Add project to scheduler as well as db.
+        # Dont use api endpoint to add a project since we shouldn't ideally
+        # use one api endpoint to test the other.
+
+    def test_list_projects(self):
+        self.add_test_project()
+
+        response = self.open_with_auth('/list_projects/', 'GET', ROOT_USER, ROOT_PASS)
+        #print response.data
+        self.assert_200(response)
+
+        #XXX Remove temp code that acts as example.
+        #users = (response.json)['users']
+        #usernames = [user['username'] for user in users]
+
+        #self.assertIn(ROOT_USER, usernames, 'root not in user list')
+        #self.assertIn(self.test_user, usernames, 'test_user not in user list')
+        #self.assertEqual(2, len(usernames), 'unexpected number of users')
+
+
+if __name__ == '__main__':
+    unittest.main()
