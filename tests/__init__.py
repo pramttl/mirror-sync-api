@@ -24,8 +24,6 @@ job_defaults = {
     'max_instances': 3
 }
 
-scheduler = BackgroundScheduler()
-
 def init_db(app, db):
     with app.app_context():
         db.create_all(app=app)
@@ -44,27 +42,27 @@ class MsyncApiTestCase(TestCase):
         app.config['ROOT_USER'] = 'root'
         app.config['ROOT_PASS'] = 'root'
         app.config['SECRET_KEY'] = 'secret'
+        app.debug = True
         self.app = app
         self.db = db
+        # Initializing test scheduler
+        scheduler = BackgroundScheduler()
+        scheduler.configure(jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone=utc)
         self.scheduler = scheduler
+        self.scheduler.start()
         return app
 
     def open_with_auth(self, url, method, username, password):
         return self.client.open(url,
             method=method,
             headers={
-                'Authorization': 'Basic ' + base64.b64encode(username + \
-                ":" + password)
+                'Authorization': 'Basic ' + base64.b64encode(username + ":" + password)
             }
         )
 
     def setUp(self):
         # Initializing test database
         init_db(self.app, self.db)
-
-        # Initializing test scheduler
-        scheduler.configure(jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone=utc)
-        scheduler.start()
 
     def tearDown(self):
         self.db.session.remove()

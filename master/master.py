@@ -44,8 +44,6 @@ job_defaults = {
     'max_instances': 3
 }
 
-scheduler = BackgroundScheduler()
-
 ############################  MODELS  #############################
 from models import User, SlaveNode
 
@@ -527,6 +525,7 @@ if __name__ == "__main__":
             db.session.commit()
 
     # Apply configuration to scheduler instance.
+    scheduler = BackgroundScheduler()
     scheduler.configure(jobstores=jobstores, executors=executors, job_defaults=job_defaults, timezone=utc)
     scheduler.start()
 
