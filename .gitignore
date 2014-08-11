@@ -3,3 +3,5 @@ venv/*
 *.py[c|m]
 *.db
 *jobs.sqlite
+
+docs/build/*

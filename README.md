@@ -307,7 +307,7 @@ It is possible for users to fetch access token by,
 
 Sending a GET request to `/get_token/`
 
-Allow Roles: Any (But user should be authenticated)
+Allowed Roles: Any (But user should be authenticated)
 
 
 ### Explicitly initiating a sync

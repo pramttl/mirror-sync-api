@@ -2,12 +2,16 @@ APScheduler==3.0.0rc1
 Flask==0.10.1
 Flask-HTTPAuth==2.2.1
 Flask-SQLAlchemy==1.0
+Flask-Testing==0.4.2
 Jinja2==2.7.3
 MarkupSafe==0.23
+Pygments==1.6
 SQLAlchemy==0.9.6
+Sphinx==1.2.2
 Werkzeug==0.9.6
 argparse==1.2.1
 configparser==3.3.0r2
+docutils==0.12
 futures==2.1.6
 itsdangerous==0.24
 pytz==2014.4
