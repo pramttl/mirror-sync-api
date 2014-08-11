@@ -48,27 +48,32 @@ class ProjectsTestCase(MsyncApiTestCase):
         ct = CronTrigger(**schedule_kwargs)
         job = self.scheduler.add_job(func=sync_project_from_upstream, id=job_id, trigger=ct, kwargs=job_kwargs)
 
+    '''
     def test_list_projects(self):
         self.add_test_project()
         print self.scheduler.get_jobs()
 
-        response = self.open_with_auth('list_projects/', 'GET', ROOT_USER, ROOT_PASS)
-        #response = self.client.get(url_for('list_projects'))
-        #                           headers=[('Authorization', 'Basic '
-        #                                     + base64.b64encode(ROOT_USER +
-        #                                                        ':' +
-        #                                                        ROOT_PASS))])
+        response = self.open_with_auth('/list_projects/', 'GET', ROOT_USER, ROOT_PASS)
         print response.data
         self.assert_200(response)
 
         #XXX Remove temp code that acts as example.
-        #users = (response.json)['users']
-        #usernames = [user['username'] for user in users]
-
         #self.assertIn(ROOT_USER, usernames, 'root not in user list')
         #self.assertIn(self.test_user, usernames, 'test_user not in user list')
         #self.assertEqual(2, len(usernames), 'unexpected number of users')
+    '''
 
+    def test_remove_project(self):
+        self.add_test_project()
+        headers={
+            'Authorization': 'Basic ' + base64.b64encode(ROOT_USER + ":" + ROOT_PASS)
+        }
+        data = {
+         'id': 'ubuntu',
+        }
+        response = self.client.post(url_for('remove_project'), data=data,
+                                    headers=headers)
+        print response.data
 
 if __name__ == '__main__':
     unittest.main()

@@ -42,7 +42,7 @@ class MsyncApiTestCase(TestCase):
         app.config['ROOT_USER'] = 'root'
         app.config['ROOT_PASS'] = 'root'
         app.config['SECRET_KEY'] = 'secret'
-        app.debug = True
+        app.debug = False
         self.app = app
         self.db = db
         # Initializing test scheduler
@@ -51,14 +51,6 @@ class MsyncApiTestCase(TestCase):
         self.scheduler = scheduler
         self.scheduler.start()
         return app
-
-    def open_with_auth(self, url, method, username, password):
-        return self.client.open(url,
-            method=method,
-            headers={
-                'Authorization': 'Basic ' + base64.b64encode(username + ":" + password)
-            }
-        )
 
     def setUp(self):
         # Initializing test database
