@@ -20,13 +20,11 @@ import problems that this API aims at solving is.
 0. Easy to query and modify syncing period of existing projects.
 1. Ability to retrieve information of projects scheduled for syncing.
 2. No need to edit crontab entries ever again.
-3. Bi-directional communication between master and slave that enables taking feedback
-  from slaves.
+3. Bi-directional communication between master and slave that enables taking feedback from slaves.
 
 Assumptions:
 
-0. This API assumes that there is a setup where upstream projects are to be synced
-  from rsync sources.
+0. This API assumes that there is a setup where upstream projects are to be synced from rsync sources.
 1. Master/Slave syncing architecture is assumed. There can be 0 or more slaves.
    Using a slave node as an ftp host is optional but as many of them can be added
    easily via the api.
@@ -41,8 +39,7 @@ Installation
 .. toctree:
     :maxdepth: 1
 
-    installation/master
-    installation/slave
+    installation
 
 Design
 ------
