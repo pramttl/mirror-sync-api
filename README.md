@@ -262,7 +262,7 @@ Example json payload:
           "dest": "/home/pranjal/projects/osl/syncedup_temp/", # "/data/ftp/.1/",
         }
 
-`id` paramter is compulsary.
+`id` paramter is compulsory.
 The `project` parameter is optional. If this parameter is update the new id will also change and
 automatically set as per the name of the project.
 
